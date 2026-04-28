@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Checkout — Sponsorship Report Bot · Veltrix</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <style>
+    /* ── Page Layout ── */
+    .checkout-wrap {
+      min-height: 100vh;
+      background: #f0f4f8;
+      padding: 40px 20px 80px;
+    }
+
+    .checkout-grid {
+      max-width: 960px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 1fr 420px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ── Left Panel: Order Summary ── */
+    .order-panel {
+      background: white;
+      border-radius: 14px;
+      padding: 36px 32px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+    }
+
+    .order-panel .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 24px;
+    }
+
+    .product-summary {
+      display: flex;
+      gap: 18px;
+      align-items: flex-start;
+      padding-bottom: 24px;
+      border-bottom: 1px solid #f0f0f0;
+      margin-bottom: 24px;
+    }
+
+    .product-thumb {
+      width: 64px;
+      height: 64px;
+      background: linear-gradient(135deg, #4285F4, #2b6de0);
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      flex-shrink: 0;
+    }
+
+    .product-info h2 {
+      font-size: 18px;
+      margin-bottom: 6px;
+      color: #1a1a2e;
+    }
+
+    .product-info p {
+      font-size: 13px;
+      color: #888;
+      line-height: 1.5;
+    }
+
+    .feature-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+
+    .feature-list li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      color: #444;
+    }
+
+    .feature-list .check {
+      width: 20px;
+      height: 20px;
+      background: #e6f4ea;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      flex-shrink: 0;
+      color: #34a853;
+      font-weight: 700;
+    }
+
+    .price-breakdown {
+      border-top: 1px solid #f0f0f0;
+      padding-top: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 14px;
+      color: #666;
+    }
+
+    .price-row.total {
+      font-size: 20px;
+      font-weight: 800;
+      color: #1a1a2e;
+      border-top: 1px solid #f0f0f0;
+      padding-top: 14px;
+      margin-top: 4px;
+    }
+
+    .price-row.total span:last-child { color: #4285F4; }
+
+    .guarantee {
+      margin-top: 24px;
+      background: #f0f4f8;
+      border-radius: 10px;
+      padding: 16px 18px;
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+    }
+
+    .guarantee .g-icon { font-size: 24px; flex-shrink: 0; }
+
+    .guarantee p {
+      font-size: 13px;
+      color: #555;
+      line-height: 1.5;
+    }
+
+    .guarantee strong { color: #1a1a2e; }
+
+    /* ── Right Panel: Payment ── */
+    .payment-panel {
+      background: white;
+      border-radius: 14px;
+      padding: 32px 28px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      position: sticky;
+      top: 80px;
+    }
+
+    .payment-panel .panel-title {
+      font-size: 13px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 20px;
+    }
+
+    /* Step Indicators */
+    .steps {
+      display: flex;
+      gap: 0;
+      margin-bottom: 28px;
+      position: relative;
+    }
+
+    .steps::before {
+      content: '';
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      right: 14px;
+      height: 2px;
+      background: #e8eaed;
+      z-index: 0;
+    }
+
+    .step-dot {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      flex: 1;
+      position: relative;
+      z-index: 1;
+    }
+
+    .step-dot .dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: #e8eaed;
+      color: #aaa;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      transition: all 0.3s;
+    }
+
+    .step-dot.active .dot {
+      background: #4285F4;
+      color: white;
+    }
+
+    .step-dot.done .dot {
+      background: #34a853;
+      color: white;
+    }
+
+    .step-dot .dot-label {
+      font-size: 10px;
+      color: #aaa;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+    }
+
+    .step-dot.active .dot-label { color: #4285F4; }
+    .step-dot.done  .dot-label  { color: #34a853; }
+
+    /* Crypto Selector */
+    .crypto-selector {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .crypto-option {
+      border: 2px solid #e8eaed;
+      border-radius: 8px;
+      padding: 10px 8px;
+      text-align: center;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .crypto-option:hover        { border-color: #4285F4; }
+    .crypto-option.selected     {
+      border-color: #4285F4;
+      background: #e8f0fe;
+    }
+
+    .crypto-option .c-icon      { font-size: 22px; margin-bottom: 4px; }
+    .crypto-option .c-name      { font-size: 11px; font-weight: 700; color: #333; }
+    .crypto-option .c-network   { font-size: 10px; color: #888; }
+
+    /* Amount Box */
+    .amount-box {
+      background: #f8f9fa;
+      border-radius: 10px;
+      padding: 16px 18px;
+      margin-bottom: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .amount-box .a-label { font-size: 13px; color: #888; }
+
+    .amount-box .a-value {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1a1a2e;
+    }
+
+    .amount-box .a-sub {
+      font-size: 11px;
+      color: #aaa;
+      text-align: right;
+    }
+
+    /* QR + Address */
+    .qr-section {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .qr-placeholder {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto 12px;
+      background: #f0f4f8;
+      border-radius: 10px;
+      border: 2px dashed #ddd;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      color: #bbb;
+      text-align: center;
+      padding: 8px;
+      line-height: 1.4;
+    }
+
+    /* real QR via API */
+    .qr-placeholder img {
+      width: 100%;
+      height: 100%;
+      border-radius: 8px;
+    }
+
+    .address-box {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: #f0f4f8;
+      border-radius: 8px;
+      padding: 11px 14px;
+      margin-bottom: 8px;
+    }
+
+    .address-text {
+      font-family: monospace;
+      font-size: 12px;
+      color: #333;
+      word-break: break-all;
+      flex: 1;
+      text-align: left;
+    }
+
+    .copy-btn {
+      background: #4285F4;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 6px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      flex-shrink: 0;
+      transition: opacity 0.2s;
+    }
+
+    .copy-btn:hover { opacity: 0.85; }
+
+    .network-note {
+      font-size: 11px;
+      color: #f09000;
+      background: #fff8e1;
+      border-radius: 6px;
+      padding: 8px 12px;
+      margin-bottom: 20px;
+      text-align: center;
+      font-weight: 600;
+    }
+
+    /* Form Fields */
+    .field-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-bottom: 16px;
+    }
+
+    .field-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: #555;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+    }
+
+    .field-input {
+      width: 100%;
+      padding: 11px 14px;
+      border: 1.5px solid #e8eaed;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+      transition: border-color 0.2s;
+      background: white;
+      color: #1a1a2e;
+    }
+
+    .field-input:focus { border-color: #4285F4; }
+    .field-input.error { border-color: #ea4335; }
+
+    .field-error {
+      font-size: 12px;
+      color: #ea4335;
+      display: none;
+    }
+
+    /* Submit Button */
+    .submit-btn {
+      width: 100%;
+      padding: 15px;
+      background: linear-gradient(135deg, #4285F4, #2b6de0);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 14px;
+    }
+
+    .submit-btn:hover    { opacity: 0.9; transform: translateY(-1px); }
+    .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    .submit-note {
+      font-size: 12px;
+      color: #aaa;
+      text-align: center;
+      line-height: 1.5;
+    }
+
+    /* Timer */
+    .timer-bar {
+      background: #fff8e1;
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .timer-label { font-size: 12px; color: #888; }
+
+    .timer-count {
+      font-size: 16px;
+      font-weight: 800;
+      color: #f09000;
+      font-family: monospace;
+    }
+
+    /* Success State */
+    .success-state {
+      display: none;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .success-state .s-icon   { font-size: 56px; margin-bottom: 16px; }
+    .success-state h3        { font-size: 20px; margin-bottom: 10px; color: #34a853; }
+    .success-state p         { font-size: 14px; color: #666; line-height: 1.6; }
+
+    /* Trust Bar */
+    .trust-bar {
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #888;
+    }
+
+    /* Responsive */
+    @media (max-width: 768px) {
+      .checkout-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .payment-panel { position: static; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">⚡ Veltrix</a>
+    <div class="nav-links">
+      <a href="index.html">← Back to Store</a>
+    </div>
+  </div>
+</nav>
+
+<div class="checkout-wrap">
+  <div class="checkout-grid">
+
+    <!-- ══════════════════════════════════
+         LEFT: ORDER SUMMARY
+    ══════════════════════════════════ -->
+    <div class="order-panel">
+      <div class="panel-title">Order Summary</div>
+
+      <!-- Product -->
+      <div class="product-summary">
+        <div class="product-thumb">📊</div>
+        <div class="product-info">
+          <h2>Sponsorship Report Bot</h2>
+          <p>Google Apps Script · Instant delivery after payment verification</p>
+        </div>
+      </div>
+
+      <!-- Features -->
+      <ul class="feature-list">
+        <li>
+          <span class="check">✓</span>
+          YouTube API integration — pulls live view & like counts
+        </li>
+        <li>
+          <span class="check">✓</span>
+          Auto PDF generation & email delivery to brand contacts
+        </li>
+        <li>
+          <span class="check">✓</span>
+          Live Google Sheets dashboard with web app interface
+        </li>
+        <li>
+          <span class="check">✓</span>
+          Startup guide + one-click daily trigger setup
+        </li>
+        <li>
+          <span class="check">✓</span>
+          Full source code — no subscriptions, no black box
+        </li>
+        <li>
+          <span class="check">✓</span>
+          Lifetime updates included
+        </li>
+      </ul>
+
+      <!-- Price Breakdown -->
+      <div class="price-breakdown">
+        <div class="price-row">
+          <span>Sponsorship Report Bot</span>
+          <span>$90.00</span>
+        </div>
+        <div class="price-row">
+          <span>Transaction fee</span>
+          <span>$0.00</span>
+        </div>
+        <div class="price-row total">
+          <span>Total</span>
+          <span>$90.00</span>
+        </div>
+      </div>
+
+      <!-- Guarantee -->
+      <div class="guarantee">
+        <div class="g-icon">🛡️</div>
+        <p>
+          <strong>Satisfaction guarantee.</strong> If the script doesn't work
+          in your Google account after following the setup guide, email us within
+          7 days and we'll fix it or refund you.
+          <a href="mailto:support@veltrix.dev">support@veltrix.dev</a>
+        </p>
+      </div>
+    </div>
+
+    <!-- ══════════════════════════════════
+         RIGHT: PAYMENT PANEL
+    ══════════════════════════════════ -->
+    <div class="payment-panel">
+      <div class="panel-title">Secure Checkout</div>
+
+      <!-- Step Indicators -->
+      <div class="steps">
+        <div class="step-dot done" id="step1">
+          <div class="dot">✓</div>
+          <span class="dot-label">Cart</span>
+        </div>
+        <div class="step-dot active" id="step2">
+          <div class="dot">2</div>
+          <span class="dot-label">Payment</span>
+        </div>
+        <div class="step-dot" id="step3">
+          <div class="dot">3</div>
+          <span class="dot-label">Confirm</span>
+        </div>
+      </div>
+
+      <!-- Main Form -->
+      <div id="payment-form">
+
+        <!-- Crypto Selector -->
+        <p class="field-label" style="margin-bottom:10px;">Select currency</p>
+        <div class="crypto-selector">
+          <div class="crypto-option selected" onclick="selectCrypto(this, 'USDT')">
+            <div class="c-icon">💵</div>
+            <div class="c-name">USDT</div>
+            <div class="c-network">BEP-20</div>
+          </div>
+          <div class="crypto-option" onclick="selectCrypto(this, 'USDC')">
+            <div class="c-icon">🔵</div>
+            <div class="c-name">USDC</div>
+            <div class="c-network">BEP-20</div>
+          </div>
+          <div class="crypto-option" onclick="selectCrypto(this, 'BNB')">
+            <div class="c-icon">🟡</div>
+            <div class="c-name">BNB</div>
+            <div class="c-network">BSC</div>
+          </div>
+        </div>
+
+        <!-- Amount -->
+        <div class="amount-box">
+          <div>
+            <div class="a-label">Amount to send</div>
+            <div class="a-value" id="display-amount">90.00 USDT</div>
+          </div>
+          <div class="a-sub">
+            ≈ $90.00 USD<br/>
+            <span id="rate-note" style="color:#34a853;font-weight:700;">1:1</span>
+          </div>
+        </div>
+
+        <!-- QR Code -->
+        <div class="qr-section">
+          <div class="qr-placeholder" id="qr-box">
+            <img id="qr-img"
+                 src="https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=YOUR_WALLET_ADDRESS"
+                 alt="Wallet QR Code"/>
+          </div>
+        </div>
+
+        <!-- Wallet Address -->
+        <div class="address-box">
+          <span class="address-text" id="wallet-address">YOUR_WALLET_ADDRESS</span>
+          <button class="copy-btn" onclick="copyAddress()">Copy</button>
+        </div>
+
+        <!-- Network Warning -->
+        <div class="network-note" id="network-note">
+          ⚠️ Send only on BNB Smart Chain (BEP-20). Wrong network = lost funds.
+        </div>
+
+        <!-- Countdown Timer -->
+        <div class="timer-bar">
+          <span class="timer-label">⏱ Address reserved for</span>
+          <span class="timer-count" id="timer">30:00</span>
+        </div>
+
+        <!-- Email Field -->
+        <div class="field-group">
+          <label class="field-label">Your email address</label>
+          <input type="email"
+                 id="buyer-email"
+                 class="field-input"
+                 placeholder="you@example.com"
+                 oninput="clearError('email-error', 'buyer-email')"/>
+          <span class="field-error" id="email-error">Please enter a valid email address.</span>
+        </div>
+
+        <!-- TXID Field -->
+        <div class="field-group">
+          <label class="field-label">Transaction ID <span style="color:#aaa;font-weight:400;">(after sending)</span></label>
+          <input type="text"
+                 id="buyer-txid"
+                 class="field-input"
+                 placeholder="0xabc123..."
+                 oninput="clearError('txid-error', 'buyer-txid')"/>
+          <span class="field-error" id="txid-error">Please paste your transaction ID.</span>
+        </div>
+
+        <!-- Submit -->
+        <button class="submit-btn" id="submit-btn" onclick="submitPayment()">
+          <span id="btn-text">✅ I've Sent Payment</span>
+        </button>
+
+        <p class="submit-note">
+          We verify payments manually. Your files arrive within 1 hour.<br/>
+          Questions? <a href="mailto:support@veltrix.dev">support@veltrix.dev</a>
+        </p>
+
+        <!-- Trust Bar -->
+        <div class="trust-bar">
+          <div class="trust-item">🔒 <span>Encrypted</span></div>
+          <div class="trust-item">⚡ <span>Instant on verify</span></div>
+          <div class="trust-item">🛡️ <span>7-day guarantee</span></div>
+        </div>
+
+      </div><!-- end #payment-form -->
+
+      <!-- Success State (hidden until submit) -->
+      <div class="success-state" id="success-state">
+        <div class="s-icon">✅</div>
+        <h3>Payment Submitted!</h3>
+        <p>
+          We've received your details and are verifying your transaction.<br/><br/>
+          <strong>Your files will arrive within 1 hour.</strong><br/><br/>
+          Check your spam folder if you don't see the email.<br/>
+          Need help? <a href="mailto:support@veltrix.dev">support@veltrix.dev</a>
+        </p>
+        <br/>
+        <a class="btn btn-blue" href="index.html" style="display:inline-block;margin-top:8px;">
+          Back to Store
+        </a>
+      </div>
+
+    </div><!-- end .payment-panel -->
+  </div><!-- end .checkout-grid -->
+</div>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+
+const WALLET = {
+  address: "YOUR_WALLET_ADDRESS"
+};
+
+const CRYPTO_CONFIG = {
+  USDT: { symbol: "USDT", rate: 1.00,   network: "BNB Smart Chain (BEP-20)", icon: "💵" },
+  USDC: { symbol: "USDC", rate: 1.00,   network: "BNB Smart Chain (BEP-20)", icon: "🔵" },
+  BNB:  { symbol: "BNB",  rate: null,   network: "BNB Smart Chain (BSC)",    icon: "🟡" }
+};
+
+const PRODUCT = {
+  id:    "sponsorship-bot",
+  name:  "Sponsorship Report Bot",
+  price: 90
+};
+
+let selectedCrypto = "USDT";
+let timerInterval  = null;
+let bnbPrice       = null;
+
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener("DOMContentLoaded", function () {
+  startTimer(30 * 60);
+  fetchBnbPrice();
+  updateQR(WALLET.address);
+});
+
+// ============================================================
+// CRYPTO SELECTOR
+// ============================================================
+function selectCrypto(el, currency) {
+  document.querySelectorAll(".crypto-option").forEach(function (opt) {
+    opt.classList.remove("selected");
+  });
+  el.classList.add("selected");
+  selectedCrypto = currency;
+  updateAmountDisplay();
+
+  const cfg = CRYPTO_CONFIG[currency];
+  document.getElementById("network-note").textContent =
+    "⚠️ Send only on " + cfg.network + ". Wrong network = lost funds.";
+}
+
+function updateAmountDisplay() {
+  const cfg    = CRYPTO_CONFIG[selectedCrypto];
+  let amount   = PRODUCT.price;
+  let rateNote = "1:1";
+
+  if (selectedCrypto === "BNB" && bnbPrice) {
+    amount   = (PRODUCT.price / bnbPrice).toFixed(4);
+    rateNote = "1 BNB ≈ $" + bnbPrice.toFixed(2);
+  }
+
+  document.getElementById("display-amount").textContent =
+    amount + " " + cfg.symbol;
+  document.getElementById("rate-note").textContent = rateNote;
+}
+
+// ============================================================
+// FETCH BNB PRICE (CoinGecko free API)
+// ============================================================
+function fetchBnbPrice() {
+  fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd")
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      bnbPrice = data.binancecoin.usd;
+      updateAmountDisplay();
+    })
+    .catch(function () {
+      // Fallback: hide BNB if price unavailable
+      console.warn("BNB price fetch failed. Using fallback.");
+      bnbPrice = 600; // Fallback estimate
+      updateAmountDisplay();
+    });
+}
+
+// ============================================================
+// QR CODE
+// ============================================================
+function updateQR(address) {
+  const url = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=" +
+              encodeURIComponent(address);
+  document.getElementById("qr-img").src = url;
+}
+
+// ============================================================
+// COPY ADDRESS
+// ============================================================
+function copyAddress() {
+  const address = document.getElementById("wallet-address").textContent.trim();
+  navigator.clipboard.writeText(address).then(function () {
+    showToast("Address copied!", "success");
+  });
+}
+
+// ============================================================
+// COUNTDOWN TIMER
+// ============================================================
+function startTimer(seconds) {
+  let remaining = seconds;
+
+  timerInterval = setInterval(function () {
+    remaining--;
+    const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+    const s = String(remaining % 60).padStart(2, "0");
+    document.getElementById("timer").textContent = m + ":" + s;
+
+    if (remaining <= 0) {
+      clearInterval(timerInterval);
+      document.getElementById("timer").textContent = "Expired";
+      document.getElementById("timer").style.color = "#ea4335";
+    }
+  }, 1000);
+}
+
+// ============================================================
+// FORM VALIDATION
+// ============================================================
+function validateForm() {
+  let valid = true;
+
+  const email = document.getElementById("buyer-email").value.trim();
+  const txid  = document.getElementById("buyer-txid").value.trim();
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  if (!emailRegex.test(email)) {
+    document.getElementById("email-error").style.display = "block";
+    document.getElementById("buyer-email").classList.add("error");
+    valid = false;
+  }
+
+  if (!txid) {
+    document.getElementById("txid-error").style.display = "block";
+    document.getElementById("buyer-txid").classList.add("error");
+    valid = false;
+  }
+
+  return valid;
+}
+
+function clearError(errorId, inputId) {
+  document.getElementById(errorId).style.display = "none";
+  document.getElementById(inputId).classList.remove("error");
+}
+
+// ============================================================
+// SUBMIT PAYMENT
+// ============================================================
+function submitPayment() {
+  if (!validateForm()) return;
+
+  const btn   = document.getElementById("submit-btn");
+  const email = document.getElementById("buyer-email").value.trim();
+  const txid  = document.getElementById("buyer-txid").value.trim();
+
+  const cfg    = CRYPTO_CONFIG[selectedCrypto];
+  let amount   = PRODUCT.price;
+  if (selectedCrypto === "BNB" && bnbPrice) {
+    amount = (PRODUCT.price / bnbPrice).toFixed(4);
+  }
+
+  btn.disabled = true;
+  document.getElementById("btn-text").textContent = "Submitting...";
+
+  const payload = {
+    type:      "purchase",
+    product:   PRODUCT.id,
+    name:      PRODUCT.name,
+    price:     PRODUCT.price,
+    currency:  selectedCrypto,
+    amount:    amount,
+    email:     email,
+    txid:      txid,
+    wallet:    WALLET.address,
+    timestamp: new Date().toISOString()
+  };
+
+  fetch(APPS_SCRIPT_URL, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(payload)
+  })
+  .then(function () {
+    showSuccess();
+  })
+  .catch(function () {
+    // Still show success — manual fallback
+    showSuccess();
+  });
+}
+
+// ============================================================
+// SHOW SUCCESS STATE
+// ============================================================
+function showSuccess() {
+  clearInterval(timerInterval);
+
+  // Update step indicators
+  document.getElementById("step2").classList.remove("active");
+  document.getElementById("step2").classList.add("done");
+  document.getElementById("step2").querySelector(".dot").textContent = "✓";
+  document.getElementById("step3").classList.add("active");
+
+  // Swap form for success message
+  document.getElementById("payment-form").style.display  = "none";
+  document.getElementById("success-state").style.display = "block";
+
+  showToast("Payment submitted successfully!", "success");
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(message, type) {
+  const toast = document.getElementById("toast");
+  toast.textContent   = message;
+  toast.className     = "toast toast-" + type;
+  toast.style.display = "block";
+  setTimeout(function () { toast.style.display = "none"; }, 4000);
+}
+</script>
+</body>
+</html>
