@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Veltrix Creator Tools</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+  <meta property="og:title"       content="Veltrix Creator Tools"/>
+  <meta property="og:description" content="Automation tools built for YouTube creators."/>
+  <meta property="og:url"         content="https://veltrix-server-tools.github.io/creator-tools/"/>
+</head>
+<body>
+
+<!-- ============ NAV ============ -->
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">⚡ Veltrix</a>
+    <div class="nav-links">
+      <a href="index.html">Store</a>
+      <a href="posts.html">Posts</a>
+      <a href="#freebies">Free Tools</a>
+      <a href="#contact">Contact</a>
+    </div>
+  </div>
+</nav>
+
+<!-- ============ HERO ============ -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="hero-badge">Built for Creators · 2026</span>
+    <h1>Automate Your<br/>Sponsorship Workflow</h1>
+    <p>Google Apps Script tools that save you hours every week.<br/>
+       One-time payment. No subscriptions. Instant delivery.</p>
+    <div class="hero-cta">
+      <a class="btn btn-white" href="#products">Browse Tools</a>
+      <a class="btn btn-outline" href="#freebies">Get Free Template</a>
+    </div>
+  </div>
+</section>
+
+<!-- ============ PRODUCTS ============ -->
+<section class="section" id="products">
+  <div class="container">
+    <div class="section-head">
+      <h2>Tools</h2>
+      <p>One-time purchase. Delivered instantly to your inbox.</p>
+    </div>
+
+    <div class="product-grid">
+
+      <!-- Product 1 -->
+      <div class="product-card featured">
+        <div class="product-badge">Best Seller</div>
+        <div class="product-icon">📊</div>
+        <h3>Sponsorship Report Bot</h3>
+        <p class="product-desc">
+          Auto-pulls your YouTube stats and sends a branded PDF report
+          to your sponsors. Runs daily on autopilot.
+        </p>
+        <ul class="product-features">
+          <li>✅ YouTube API integration</li>
+          <li>✅ Auto PDF generation & email</li>
+          <li>✅ Live Google Sheets dashboard</li>
+          <li>✅ Setup guide included</li>
+          <li>✅ Lifetime updates</li>
+        </ul>
+        <div class="product-price">
+          <span class="price">$90</span>
+          <span class="price-note">one-time</span>
+        </div>
+        <button class="btn btn-blue full-width"
+                onclick="openCheckout('sponsorship-bot', 'Sponsorship Report Bot', 90)">
+          Buy Now — Pay with Crypto
+        </button>
+      </div>
+
+      <!-- Product 2 -->
+      <div class="product-card">
+        <div class="product-icon">🤖</div>
+        <h3>Creator Sales Bot</h3>
+        <p class="product-desc">
+          Automated 2-step email funnel that sends your lead magnet
+          and follow-up upsell on autopilot. 50 emails/day limit built in.
+        </p>
+        <ul class="product-features">
+          <li>✅ Google Sheets CRM</li>
+          <li>✅ Auto lead magnet delivery</li>
+          <li>✅ 3-day upsell sequence</li>
+          <li>✅ Full error logging</li>
+        </ul>
+        <div class="product-price">
+          <span class="price">$65</span>
+          <span class="price-note">one-time</span>
+        </div>
+        <button class="btn btn-blue full-width"
+                onclick="openCheckout('sales-bot', 'Creator Sales Bot', 65)">
+          Buy Now — Pay with Crypto
+        </button>
+      </div>
+
+      <!-- Product 3 -->
+      <div class="product-card">
+        <div class="product-icon">📦</div>
+        <h3>Full Creator Bundle</h3>
+        <p class="product-desc">
+          Both tools together. Sponsorship Report Bot + Creator Sales Bot
+          at a discounted bundle price.
+        </p>
+        <ul class="product-features">
+          <li>✅ Everything in both tools</li>
+          <li>✅ Priority email support</li>
+          <li>✅ Future tools included</li>
+          <li>✅ Save $25</li>
+        </ul>
+        <div class="product-price">
+          <span class="price">$130</span>
+          <span class="price-note">one-time · save $25</span>
+        </div>
+        <button class="btn btn-blue full-width"
+                onclick="openCheckout('bundle', 'Full Creator Bundle', 130)">
+          Buy Bundle — Pay with Crypto
+        </button>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ FREEBIES ============ -->
+<section class="section section-grey" id="freebies">
+  <div class="container">
+    <div class="section-head">
+      <h2>Free Tools</h2>
+      <p>Enter your email and we'll send the download link instantly.</p>
+    </div>
+
+    <div class="freebie-grid">
+
+      <!-- Freebie 1 -->
+      <div class="freebie-card">
+        <div class="freebie-icon">📄</div>
+        <h3>Sponsorship Report Template</h3>
+        <p>The Google Sheets template creators use to report stats to brands.
+           Formatted, clean, and ready to use.</p>
+        <form class="freebie-form" onsubmit="claimFreebie(event, 'template')">
+          <input type="text"  name="name"  placeholder="Your first name" required />
+          <input type="email" name="email" placeholder="Your email address" required />
+          <button type="submit" class="btn btn-green full-width">
+            Send Me the Template →
+          </button>
+        </form>
+        <div class="freebie-confirm" id="confirm-template" style="display:none">
+          ✅ Check your inbox! The template is on its way.
+        </div>
+      </div>
+
+      <!-- Freebie 2 -->
+      <div class="freebie-card">
+        <div class="freebie-icon">📋</div>
+        <h3>Creator Outreach Script Pack</h3>
+        <p>5 plug-and-play email scripts for reaching out to brands.
+           Copy, paste, send.</p>
+        <form class="freebie-form" onsubmit="claimFreebie(event, 'scripts')">
+          <input type="text"  name="name"  placeholder="Your first name" required />
+          <input type="email" name="email" placeholder="Your email address" required />
+          <button type="submit" class="btn btn-green full-width">
+            Send Me the Scripts →
+          </button>
+        </form>
+        <div class="freebie-confirm" id="confirm-scripts" style="display:none">
+          ✅ Check your inbox! The scripts are on their way.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ SOCIAL PROOF ============ -->
+<section class="section" id="proof">
+  <div class="container">
+    <div class="section-head">
+      <h2>What Creators Say</h2>
+    </div>
+    <div class="testimonial-grid">
+      <div class="testimonial">
+        <p>"Saved me literally 6 hours a week. My sponsors love the clean reports."</p>
+        <span>— Marcus T., 180k subscribers</span>
+      </div>
+      <div class="testimonial">
+        <p>"Set it up in 20 minutes. Now it just runs every morning automatically."</p>
+        <span>— Priya S., Tech Creator</span>
+      </div>
+      <div class="testimonial">
+        <p>"Worth every cent. I closed two new brand deals using the outreach scripts."</p>
+        <span>— James R., Gaming Channel</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="section section-grey" id="contact">
+  <div class="container narrow">
+    <div class="section-head">
+      <h2>Questions?</h2>
+      <p>Email us at <a href="mailto:support@veltrix.dev">support@veltrix.dev</a><br/>
+         We reply within 24 hours.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ============ FOOTER ============ -->
+<footer class="footer">
+  <div class="footer-inner">
+    <span>⚡ Veltrix Creator Tools · 2026</span>
+    <div class="footer-links">
+      <a href="index.html">Store</a>
+      <a href="posts.html">Posts</a>
+      <a href="#freebies">Free Tools</a>
+    </div>
+  </div>
+</footer>
+
+<!-- ============ CHECKOUT MODAL ============ -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeCheckout()"></div>
+<div class="modal" id="checkout-modal">
+  <button class="modal-close" onclick="closeCheckout()">✕</button>
+  <div class="modal-icon">⚡</div>
+  <h2 id="modal-title">Checkout</h2>
+  <p id="modal-desc" class="modal-desc"></p>
+
+  <div class="crypto-box">
+    <p class="crypto-label">Send exact amount to:</p>
+    <div class="crypto-address" id="crypto-address"></div>
+    <button class="btn btn-grey full-width" onclick="copyAddress()">
+      📋 Copy Address
+    </button>
+    <div class="crypto-networks">
+      Accepts: USDT (BEP-20) · USDC (BEP-20) · BNB
+    </div>
+  </div>
+
+  <div class="modal-form">
+    <p class="modal-form-label">After paying, enter your email to receive your files:</p>
+    <input type="email" id="modal-email" placeholder="your@email.com" />
+    <input type="text"  id="modal-txid"  placeholder="Transaction ID (optional but recommended)" />
+    <button class="btn btn-blue full-width" onclick="submitPayment()">
+      ✅ I've Paid — Send My Files
+    </button>
+    <div class="modal-confirm" id="modal-confirm" style="display:none">
+      ✅ Got it! We'll verify and email your files within 1 hour.
+    </div>
+  </div>
+</div>
+
+<script>
+// ============================================================
+// CONFIG
+// ============================================================
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+
+const WALLET = {
+  address: "YOUR_BINANCE_PAY_WALLET_ADDRESS",
+  currency: "USDT"
+};
+
+const PRODUCTS = {
+  "sponsorship-bot": { zip: "sponsorship-bot.zip" },
+  "sales-bot":       { zip: "sales-bot.zip"       },
+  "bundle":          { zip: "bundle.zip"           }
+};
+
+// ============================================================
+// CHECKOUT MODAL
+// ============================================================
+let currentProduct = null;
+let currentPrice   = null;
+
+function openCheckout(productId, productName, price) {
+  currentProduct = productId;
+  currentPrice   = price;
+
+  document.getElementById("modal-title").textContent =
+    productName + " — $" + price;
+  document.getElementById("modal-desc").textContent =
+    "One-time payment. Files delivered to your inbox within 1 hour of verification.";
+  document.getElementById("crypto-address").textContent = WALLET.address;
+  document.getElementById("modal-confirm").style.display = "none";
+  document.getElementById("modal-email").value = "";
+  document.getElementById("modal-txid").value  = "";
+
+  document.getElementById("modal-overlay").classList.add("active");
+  document.getElementById("checkout-modal").classList.add("active");
+}
+
+function closeCheckout() {
+  document.getElementById("modal-overlay").classList.remove("active");
+  document.getElementById("checkout-modal").classList.remove("active");
+}
+
+function copyAddress() {
+  navigator.clipboard.writeText(WALLET.address).then(function () {
+    showToast("Address copied!", "success");
+  });
+}
+
+function submitPayment() {
+  const email = document.getElementById("modal-email").value.trim();
+  const txid  = document.getElementById("modal-txid").value.trim();
+
+  if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    showToast("Please enter a valid email.", "error");
+    return;
+  }
+
+  const payload = {
+    type:      "purchase",
+    product:   currentProduct,
+    price:     currentPrice,
+    email:     email,
+    txid:      txid || "Not provided",
+    timestamp: new Date().toISOString()
+  };
+
+  fetch(APPS_SCRIPT_URL, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(payload)
+  })
+  .then(function () {
+    document.getElementById("modal-confirm").style.display = "block";
+    showToast("Payment submitted!", "success");
+  })
+  .catch(function () {
+    // Still confirm to user — manual review fallback
+    document.getElementById("modal-confirm").style.display = "block";
+  });
+}
+
+// ============================================================
+// FREEBIE FORM
+// ============================================================
+function claimFreebie(event, freebieId) {
+  event.preventDefault();
+  const form  = event.target;
+  const name  = form.querySelector('[name="name"]').value.trim();
+  const email = form.querySelector('[name="email"]').value.trim();
+
+  const payload = {
+    type:    "freebie",
+    freebie: freebieId,
+    name:    name,
+    email:   email
+  };
+
+  fetch(APPS_SCRIPT_URL, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify(payload)
+  })
+  .then(function () {
+    document.getElementById("confirm-" + freebieId).style.display = "block";
+    form.style.display = "none";
+    showToast("Check your inbox!", "success");
+  })
+  .catch(function () {
+    document.getElementById("confirm-" + freebieId).style.display = "block";
+    form.style.display = "none";
+  });
+}
+
+// ============================================================
+// TOAST
+// ============================================================
+function showToast(message, type) {
+  let toast = document.getElementById("toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    document.body.appendChild(toast);
+  }
+  toast.textContent   = message;
+  toast.className     = "toast toast-" + type;
+  toast.style.display = "block";
+  setTimeout(function () { toast.style.display = "none"; }, 4000);
+}
+</script>
+</body>
+</html>
