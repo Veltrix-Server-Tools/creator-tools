@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Posts — Veltrix Creator Tools</title>
+  <link rel="stylesheet" href="assets/style.css"/>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a class="nav-logo" href="index.html">⚡ Veltrix</a>
+    <div class="nav-links">
+      <a href="index.html">Store</a>
+      <a href="posts.html">Posts</a>
+      <a href="index.html#freebies">Free Tools</a>
+    </div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero hero-small">
+  <div class="hero-inner">
+    <h1>Posts</h1>
+    <p>Tutorials, tips, and updates for creators automating their workflow.</p>
+  </div>
+</section>
+
+<!-- POSTS -->
+<section class="section">
+  <div class="container">
+
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+      <button class="filter-btn active" onclick="filterPosts('all', this)">All</button>
+      <button class="filter-btn" onclick="filterPosts('tutorial', this)">Tutorials</button>
+      <button class="filter-btn" onclick="filterPosts('update', this)">Updates</button>
+      <button class="filter-btn" onclick="filterPosts('tip', this)">Tips</button>
+    </div>
+
+    <!-- Post Grid -->
+    <div class="post-grid" id="post-grid">
+
+      <article class="post-card" data-category="tutorial">
+        <div class="post-meta">
+          <span class="post-tag tag-tutorial">Tutorial</span>
+          <span class="post-date">Jan 15, 2026</span>
+        </div>
+        <h2>How to Set Up the Sponsorship Report Bot in 20 Minutes</h2>
+        <p>A step-by-step walkthrough of deploying the bot, connecting the YouTube API,
+           and sending your first automated report to a brand partner.</p>
+        <a class="post-read-more" href="posts/setup-sponsorship-bot.html">Read More →</a>
+      </article>
+
+      <article class="post-card" data-category="tip">
+        <div class="post-meta">
+          <span class="post-tag tag-tip">Tip</span>
+          <span class="post-date">Jan 10, 2026</span>
+        </div>
+        <h2>5 Stats Brands Actually Care About (And How to Present Them)</h2>
+        <p>Most creators send raw numbers. Here's what brand managers are actually
+           looking for and how to format it to close the deal.</p>
+        <a class="post-read-more" href="posts/brand-stats.html">Read More →</a>
+      </article>
+
+      <article class="post-card" data-category="update">
+        <div class="post-meta">
+          <span class="post-tag tag-update">Update</span>
+          <span class="post-date">Jan 5, 2026</span>
+        </div>
+        <h2>Creator Sales Bot v2 — What's New</h2>
+        <p>Full error handling, daily send limits, auto-logging, and a
+           hardened email validator. Here's everything that changed.</p>
+        <a class="post-read-more" href="posts/sales-bot-v2.html">Read More →</a>
+      </article>
+
+      <article class="post-card" data-category="tutorial">
+        <div class="post-meta">
+          <span class="post-tag tag-tutorial">Tutorial</span>
+          <span class="post-date">Dec 28, 2025</span>
+        </div>
+        <h2>Automating Brand Outreach with Google Apps Script</h2>
+        <p>How to build a lightweight CRM inside Google Sheets that sends
+           emails automatically without paying for any third-party tools.</p>
+        <a class="post-read-more" href="posts/outreach-automation.html">Read More →</a>
+      </article>
+
+      <article class="post-card" data-category="tip">
+        <div class="post-meta">
+          <span class="post-tag tag-tip">Tip</span>
+          <span class="post-date">Dec 20, 2025</span>
+        </div>
+        <h2>Why Creators Lose Brand Deals (And the Email That Fixes It)</h2>
+        <p>The single biggest mistake creators make when following up with
+           sponsors — and the exact template that turns it around.</p>
+        <a class="post-read-more" href="posts/brand-deals.html">Read More →</a>
+      </article>
+
+      <article class="post-card" data-category="update">
+        <div class="post-meta">
+          <span class="post-tag tag-update">Update</span>
+          <span class="post-date">Dec 15, 2025</span>
+        </div>
+        <h2>Veltrix Store Launch</h2>
+        <p>We're live. Here's what we're building, who it's for, and
+           what's coming in the next 90 days.</p>
+        <a class="post-read-more" href="posts/launch.html">Read More →</a>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- NEWSLETTER -->
+<section class="section section-grey">
+  <div class="container narrow">
+    <div class="section-head">
+      <h2>Get Updates</h2>
+      <p>New tools, tutorials, and tips. No spam. Unsubscribe anytime.</p>
+    </div>
+    <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
+      <input type="text"  id="nl-name"  placeholder="First name" required />
+      <input type="email" id="nl-email" placeholder="Email address" required />
+      <button type="submit" class="btn btn-blue">Subscribe →</button>
+    </form>
+    <div id="nl-confirm" style="display:none; text-align:center; color:#34a853; margin-top:16px;">
+      ✅ You're subscribed! Watch your inbox.
+    </div>
+  </div>
+</section>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <span>⚡ Veltrix Creator Tools · 2026</span>
+    <div class="footer-links">
+      <a href="index.html">Store</a>
+      <a href="posts.html">Posts</a>
+    </div>
+  </div>
+</footer>
+
+<script>
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+
+// Filter posts by category
+function filterPosts(category, btn) {
+  document.querySelectorAll(".filter-btn").forEach(function (b) {
+    b.classList.remove("active");
+  });
+  btn.classList.add("active");
+
+  document.querySelectorAll(".post-card").forEach(function (card) {
+    if (category === "all" || card.dataset.category === category) {
+      card.style.display = "block";
+    } else {
+      card.style.display = "none";
+    }
+  });
+}
+
+// Newsletter subscribe
+function subscribeNewsletter(event) {
+  event.preventDefault();
+  const name  = document.getElementById("nl-name").value.trim();
+  const email = document.getElementById("nl-email").value.trim();
+
+  fetch(APPS_SCRIPT_URL, {
+    method:  "POST",
+    headers: { "Content-Type": "application/json" },
+    body:    JSON.stringify({ type: "newsletter", name: name, email: email })
+  })
+  .then(function () {
+    document.getElementById("nl-confirm").style.display = "block";
+    document.querySelector(".newsletter-form").style.display = "none";
+  })
+  .catch(function () {
+    document.getElementById("nl-confirm").style.display = "block";
+    document.querySelector(".newsletter-form").style.display = "none";
+  });
+}
+</script>
+</body>
+</html>
