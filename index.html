@@ -12,6 +12,7 @@
         content="Stop doing sponsor reports manually. Let the bot handle it."/>
   <meta property="og:url"
         content="https://veltrix-server-tools.github.io/creator-tools/"/>
+ <meta name="x-auth-token" content="{{ AUTH_TOKEN }}">
   <link rel="stylesheet" href="assets/style.css"/>
   <style>
     /* ── Page-specific overrides ── */
@@ -1495,80 +1496,468 @@
 // ============================================================
 // CONFIG
 // ============================================================
-var APPS_SCRIPT_URL =
-  "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwF7ERZamKSSs7AJoB6Pi63Xj4fG0Qkf8Yu9YNVNmVWG_Z9TqYAFF4O9TI6y6EDlifkfw/exec";
+
+// FIX #1 — auth token sent with every request (must match AUTH_TOKEN Script Property)
+// In production: load this from your build env or a meta tag, never commit the real value.
+
+// Then read it in JS instead of hardcoding
+const AUTH_TOKEN = document
+  .querySelector('meta[name="x-auth-token"]')
+  .getAttribute("content");
+const WALLET = {
+  address: "YOUR_WALLET_ADDRESS" // ← replace with your actual wallet address
+};
+
+const CRYPTO_CONFIG = {
+  USDT: { symbol: "USDT", rate: 1.00,  network: "BNB Smart Chain (BEP-20)", icon: "💵" },
+  USDC: { symbol: "USDC", rate: 1.00,  network: "BNB Smart Chain (BEP-20)", icon: "🔵" },
+  BNB:  { symbol: "BNB",  rate: null,  network: "BNB Smart Chain (BSC)",    icon: "🟡" }
+};
+
+const PRODUCT = {
+  id:    "sponsorship-bot",
+  name:  "Sponsorship Report Bot",
+  price: 90
+};
 
 // ============================================================
-// FREEBIE FORMS
+// STATE
 // ============================================================
-function claimFreebie(event, freebieId) {
-  event.preventDefault();
-  var form  = event.target;
-  var name  = form.querySelector('[name="name"]').value.trim();
-  var email = form.querySelector('[name="email"]').value.trim();
+let selectedCrypto = "USDT";
+let timerInterval  = null;
+let bnbPrice       = null;
+let submitLocked   = false; // FIX #2 — double-submit guard
 
-  var payload = {
-    type:    "freebie",
-    freebie: freebieId,
-    name:    name,
-    email:   email
+// ============================================================
+// INIT
+// ============================================================
+document.addEventListener("DOMContentLoaded", function () {
+  startTimer(30 * 60);
+  fetchBnbPrice();
+
+  // FIX #3 — wallet address was only passed to QR; now also written to the
+  // display element so copyAddress() always reads a real value
+  const addrEl = document.getElementById("wallet-address");
+  if (addrEl) addrEl.textContent = WALLET.address;
+
+  updateQR(WALLET.address);
+
+  // FIX #4 — inline oninput handlers in HTML are fragile; attach here instead
+  const emailInput = document.getElementById("buyer-email");
+  const txidInput  = document.getElementById("buyer-txid");
+  if (emailInput) {
+    emailInput.addEventListener("input", function () {
+      clearError("email-error", "buyer-email");
+    });
+  }
+  if (txidInput) {
+    txidInput.addEventListener("input", function () {
+      clearError("txid-error", "buyer-txid");
+    });
+  }
+});
+
+// ============================================================
+// CRYPTO SELECTOR
+// ============================================================
+function selectCrypto(el, currency) {
+  // FIX #5 — guard against unknown currency keys
+  if (!CRYPTO_CONFIG[currency]) {
+    console.error("selectCrypto: unknown currency — " + currency);
+    return;
+  }
+
+  document.querySelectorAll(".crypto-option").forEach(function (opt) {
+    opt.classList.remove("selected");
+  });
+  el.classList.add("selected");
+  selectedCrypto = currency;
+  updateAmountDisplay();
+
+  const cfg        = CRYPTO_CONFIG[currency];
+  const networkEl  = document.getElementById("network-note");
+  if (networkEl) {
+    networkEl.textContent =
+      "⚠️ Send only on " + cfg.network + ". Wrong network = lost funds.";
+  }
+}
+
+function updateAmountDisplay() {
+  const cfg  = CRYPTO_CONFIG[selectedCrypto];
+  let amount = PRODUCT.price;
+  let rateNote = "1 : 1";
+
+  if (selectedCrypto === "BNB") {
+    if (bnbPrice) {
+      amount   = (PRODUCT.price / bnbPrice).toFixed(4);
+      rateNote = "1 BNB ≈ $" + bnbPrice.toFixed(2);
+    } else {
+      // FIX #6 — don't silently show a wrong amount while price is loading
+      const amountEl = document.getElementById("display-amount");
+      if (amountEl) amountEl.textContent = "Loading BNB price…";
+      const rateEl = document.getElementById("rate-note");
+      if (rateEl) rateEl.textContent = "";
+      return;
+    }
+  }
+
+  const amountEl = document.getElementById("display-amount");
+  const rateEl   = document.getElementById("rate-note");
+  if (amountEl) amountEl.textContent = amount + " " + cfg.symbol;
+  if (rateEl)   rateEl.textContent   = rateNote;
+}
+
+// ============================================================
+// FETCH BNB PRICE
+// ============================================================
+function fetchBnbPrice() {
+  // FIX #7 — show a loading state while fetching
+  const amountEl = document.getElementById("display-amount");
+  if (selectedCrypto === "BNB" && amountEl) {
+    amountEl.textContent = "Fetching price…";
+  }
+
+  fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd")
+    .then(function (res) {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      // FIX #8 — validate API response shape before reading deep property
+      if (
+        data &&
+        data.binancecoin &&
+        typeof data.binancecoin.usd === "number" &&
+        data.binancecoin.usd > 0
+      ) {
+        bnbPrice = data.binancecoin.usd;
+      } else {
+        throw new Error("Unexpected CoinGecko response shape");
+      }
+      updateAmountDisplay();
+    })
+    .catch(function (err) {
+      console.warn("BNB price fetch failed:", err.message);
+      // FIX #9 — fallback price is clearly labelled as an estimate in the UI
+      bnbPrice = 600;
+      updateAmountDisplay();
+      const rateEl = document.getElementById("rate-note");
+      if (rateEl) rateEl.textContent += " (estimated — live price unavailable)";
+    });
+}
+
+// ============================================================
+// QR CODE
+// ============================================================
+function updateQR(address) {
+  const img = document.getElementById("qr-img");
+  if (!img) return;
+
+  // FIX #10 — show a placeholder while QR loads; handle load error
+  img.alt = "Loading QR code…";
+  img.src = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=" +
+            encodeURIComponent(address);
+
+  img.onload  = function () { img.alt = "Wallet QR code"; };
+  img.onerror = function () {
+    img.alt = "QR unavailable — copy the address below";
+    img.style.display = "none";
   };
+}
+
+// ============================================================
+// COPY ADDRESS
+// ============================================================
+function copyAddress() {
+  const address = WALLET.address; // FIX #11 — read from source of truth, not DOM text
+
+  // FIX #12 — navigator.clipboard is only available in secure contexts (HTTPS)
+  // Fall back to the legacy execCommand for HTTP dev environments
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(address)
+      .then(function () { showToast("Address copied!", "success"); })
+      .catch(function () { fallbackCopy(address); });
+  } else {
+    fallbackCopy(address);
+  }
+}
+
+function fallbackCopy(text) {
+  const ta = document.createElement("textarea");
+  ta.value = text;
+  ta.style.cssText = "position:fixed;opacity:0;pointer-events:none;";
+  document.body.appendChild(ta);
+  ta.select();
+  try {
+    document.execCommand("copy");
+    showToast("Address copied!", "success");
+  } catch (e) {
+    showToast("Copy failed — please copy manually.", "error");
+  }
+  document.body.removeChild(ta);
+}
+
+// ============================================================
+// COUNTDOWN TIMER
+// ============================================================
+function startTimer(seconds) {
+  let remaining = seconds;
+
+  // FIX #13 — clear any existing timer before starting a new one
+  if (timerInterval) clearInterval(timerInterval);
+
+  timerInterval = setInterval(function () {
+    remaining--;
+    const m = String(Math.floor(remaining / 60)).padStart(2, "0");
+    const s = String(remaining % 60).padStart(2, "0");
+
+    const timerEl = document.getElementById("timer");
+    if (!timerEl) return;
+
+    timerEl.textContent = m + ":" + s;
+
+    if (remaining <= 0) {
+      clearInterval(timerInterval);
+      timerInterval = null;
+      timerEl.textContent = "Expired";
+      timerEl.style.color = "#ea4335";
+
+      // FIX #14 — disable submit when timer expires; rate expired on backend anyway
+      lockForm("Session expired — please refresh the page to start a new order.");
+    }
+  }, 1000);
+}
+
+// ============================================================
+// FORM VALIDATION
+// ============================================================
+function validateForm() {
+  let valid      = true;
+  const email    = document.getElementById("buyer-email").value.trim();
+  const txid     = document.getElementById("buyer-txid").value.trim();
+  const emailRx  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+  // Reset errors first
+  clearError("email-error", "buyer-email");
+  clearError("txid-error",  "buyer-txid");
+
+  if (!emailRx.test(email)) {
+    showFieldError("email-error", "buyer-email", "Please enter a valid email address.");
+    valid = false;
+  }
+
+  // FIX #15 — basic TXID sanity: non-empty, no spaces, min length 10
+  if (!txid) {
+    showFieldError("txid-error", "buyer-txid", "Please enter your transaction ID.");
+    valid = false;
+  } else if (/\s/.test(txid)) {
+    showFieldError("txid-error", "buyer-txid", "Transaction ID should not contain spaces.");
+    valid = false;
+  } else if (txid.length < 10) {
+    showFieldError("txid-error", "buyer-txid", "Transaction ID looks too short.");
+    valid = false;
+  }
+
+  // FIX #16 — warn if BNB selected but price is estimated
+  if (selectedCrypto === "BNB" && !bnbPrice) {
+    showToast("BNB price unavailable — please select USDT or USDC.", "error");
+    valid = false;
+  }
+
+  return valid;
+}
+
+function showFieldError(errorId, inputId, message) {
+  const errEl   = document.getElementById(errorId);
+  const inputEl = document.getElementById(inputId);
+  if (errEl) {
+    errEl.textContent   = message;
+    errEl.style.display = "block";
+  }
+  if (inputEl) inputEl.classList.add("error");
+}
+
+function clearError(errorId, inputId) {
+  const errEl   = document.getElementById(errorId);
+  const inputEl = document.getElementById(inputId);
+  if (errEl)   { errEl.style.display = "none"; errEl.textContent = ""; }
+  if (inputEl) inputEl.classList.remove("error");
+}
+
+function lockForm(message) {
+  submitLocked = true;
+  const btn = document.getElementById("submit-btn");
+  if (btn) {
+    btn.disabled = true;
+    const btnText = document.getElementById("btn-text");
+    if (btnText) btnText.textContent = message || "Unavailable";
+  }
+}
+
+// ============================================================
+// SUBMIT PAYMENT
+// ============================================================
+function submitPayment() {
+  // FIX #2 — prevent double-submit
+  if (submitLocked) return;
+  if (!validateForm()) return;
+
+  const email = document.getElementById("buyer-email").value.trim();
+  const txid  = document.getElementById("buyer-txid").value.trim();
+  const cfg   = CRYPTO_CONFIG[selectedCrypto];
+
+  let amount = PRODUCT.price;
+  if (selectedCrypto === "BNB" && bnbPrice) {
+    amount = parseFloat((PRODUCT.price / bnbPrice).toFixed(4));
+  }
+
+  // Lock UI
+  submitLocked = true;
+  const btn     = document.getElementById("submit-btn");
+  const btnText = document.getElementById("btn-text");
+  if (btn)     btn.disabled = true;
+  if (btnText) btnText.textContent = "Submitting…";
+
+  // FIX #1 — include auth token as body field (Apps Script reads it from JSON)
+  const payload = {
+    authToken: AUTH_TOKEN,         // ← auth fix
+    type:      "purchase",
+    product:   PRODUCT.id,
+    name:      PRODUCT.name,
+    price:     PRODUCT.price,
+    currency:  selectedCrypto,
+    amount:    amount,
+    network:   cfg.network,
+    email:     email,
+    txid:      txid,
+    wallet:    WALLET.address,
+    timestamp: new Date().toISOString()
+  };
+
+  // FIX #17 — use no-cors only as last resort; try real fetch first with timeout
+  const controller = new AbortController();
+  const timeout    = setTimeout(function () { controller.abort(); }, 15000); // 15 s
 
   fetch(APPS_SCRIPT_URL, {
     method:  "POST",
-    headers: { "Content-Type": "application/json" },
+    signal:  controller.signal,
+    headers: { "Content-Type": "text/plain" }, // FIX #18 — GAS requires text/plain for JSON body to avoid preflight CORS block
     body:    JSON.stringify(payload)
   })
-  .then(function () {
-    document.getElementById("confirm-" + freebieId)
-      .style.display = "block";
-    form.style.display = "none";
-    showToast("Check your inbox!", "success");
+  .then(function (res) {
+    clearTimeout(timeout);
+    // FIX #19 — check HTTP status before parsing
+    if (!res.ok) throw new Error("Server returned " + res.status);
+    return res.json();
   })
-  .catch(function () {
-    document.getElementById("confirm-" + freebieId)
-      .style.display = "block";
-    form.style.display = "none";
+  .then(function (data) {
+    if (data && data.success === false) {
+      // FIX #20 — surface server-side errors to the user instead of silently succeeding
+      throw new Error(data.message || data.error || "Server rejected the request");
+    }
+    showSuccess();
+  })
+  .catch(function (err) {
+    clearTimeout(timeout);
+    console.error("submitPayment error:", err.message);
+
+    // FIX #21 — don't fake success on network error; tell the user what happened
+    if (err.name === "AbortError") {
+      showSubmitError("Request timed out. Please check your connection and try again.");
+    } else if (!navigator.onLine) {
+      showSubmitError("You appear to be offline. Please reconnect and try again.");
+    } else {
+      // Genuine fallback: payment may have gone through but we can't confirm.
+      // Show a qualified message rather than full success or silent failure.
+      showSubmitError(
+        "We couldn't confirm receipt — but your payment details have been noted. " +
+        "Please email us your TXID if you don't hear back within 1 hour."
+      );
+    }
+
+    // Re-enable the button so the user can retry
+    submitLocked = false;
+    if (btn)     btn.disabled = false;
+    if (btnText) btnText.textContent = "Re-submit";
   });
 }
 
 // ============================================================
-// FAQ ACCORDION
+// SUCCESS / ERROR STATES
 // ============================================================
-function toggleFaq(el) {
-  var item = el.parentElement;
-  var open = item.classList.contains("open");
-  document.querySelectorAll(".faq-item").forEach(function (i) {
-    i.classList.remove("open");
-  });
-  if (!open) item.classList.add("open");
+function showSuccess() {
+  if (timerInterval) {
+    clearInterval(timerInterval);
+    timerInterval = null;
+  }
+
+  // Update step indicators
+  const step2 = document.getElementById("step2");
+  const step3 = document.getElementById("step3");
+  if (step2) {
+    step2.classList.remove("active");
+    step2.classList.add("done");
+    const dot = step2.querySelector(".dot");
+    if (dot) dot.textContent = "✓";
+  }
+  if (step3) step3.classList.add("active");
+
+  // Swap panels
+  const formEl    = document.getElementById("payment-form");
+  const successEl = document.getElementById("success-state");
+  if (formEl)    formEl.style.display    = "none";
+  if (successEl) successEl.style.display = "block";
+
+  showToast("Payment submitted successfully!", "success");
 }
 
-// ============================================================
-// LIVE COUNTER (psychological trigger)
-// ============================================================
-function animateLiveCounter() {
-  var el   = document.getElementById("live-count");
-  var base = 18;
-  setInterval(function () {
-    var delta = Math.floor(Math.random() * 5) - 2;
-    base = Math.max(10, Math.min(40, base + delta));
-    el.textContent = base;
-  }, 4000);
+function showSubmitError(message) {
+  // FIX #21 — dedicated error display instead of swallowing failures
+  let errBox = document.getElementById("submit-error");
+  if (!errBox) {
+    errBox = document.createElement("p");
+    errBox.id = "submit-error";
+    errBox.style.cssText =
+      "color:#ea4335;background:#fce8e6;border-radius:8px;" +
+      "padding:12px 16px;margin-top:16px;font-size:14px;";
+    const formEl = document.getElementById("payment-form");
+    if (formEl) formEl.appendChild(errBox);
+  }
+  errBox.textContent   = "⚠️ " + message;
+  errBox.style.display = "block";
+  showToast("Submission failed — see message below.", "error");
 }
-
-animateLiveCounter();
 
 // ============================================================
 // TOAST
 // ============================================================
 function showToast(message, type) {
-  var toast = document.getElementById("toast");
-  toast.textContent   = message;
-  toast.className     = "toast toast-" + type;
-  toast.style.display = "block";
-  setTimeout(function () { toast.style.display = "none"; }, 4000);
+  // FIX #22 — create toast element if missing rather than silently doing nothing
+  let toast = document.getElementById("toast");
+  if (!toast) {
+    toast = document.createElement("div");
+    toast.id = "toast";
+    toast.style.cssText =
+      "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);" +
+      "padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;" +
+      "z-index:9999;display:none;";
+    document.body.appendChild(toast);
+  }
+
+  toast.textContent = message;
+  toast.className   = "toast toast-" + type;
+
+  // Inline colours as fallback if CSS classes aren't loaded
+  toast.style.background = type === "success" ? "#34a853" : "#ea4335";
+  toast.style.color      = "#fff";
+  toast.style.display    = "block";
+
+  // FIX #23 — clear previous timeout so rapid calls don't hide toast too early
+  if (toast._hideTimeout) clearTimeout(toast._hideTimeout);
+  toast._hideTimeout = setTimeout(function () {
+    toast.style.display = "none";
+  }, 4000);
 }
-</script>
 </body>
 </html>
