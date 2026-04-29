@@ -3,33 +3,308 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Payment Submitted — Veltrix</title>
+  <meta name="x-auth-token" content="{{ AUTH_TOKEN }}"/>
+  <meta name="robots" content="noindex"/>
+  <title>Payment Submitted — Veltrix Creator Tools</title>
   <link rel="stylesheet" href="assets/style.css"/>
+  <style>
+    .success-wrap {
+      min-height: 100vh;
+      background: #f0f4f8;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .success-card {
+      background: white;
+      border-radius: 16px;
+      padding: 52px 48px;
+      max-width: 560px;
+      width: 100%;
+      box-shadow: 0 4px 32px rgba(0,0,0,0.10);
+      text-align: center;
+    }
+
+    .success-icon {
+      font-size: 64px;
+      margin-bottom: 20px;
+      display: block;
+    }
+
+    .success-card h1 {
+      font-size: 28px;
+      font-weight: 900;
+      color: #1a1a2e;
+      margin: 0 0 12px;
+    }
+
+    .success-card .product-tag {
+      display: inline-block;
+      background: #e8f0fe;
+      color: #4285F4;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 5px 16px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .success-card p {
+      font-size: 15px;
+      color: #555;
+      line-height: 1.7;
+      margin: 0 0 12px;
+    }
+
+    .timeline {
+      background: #f8f9fa;
+      border-radius: 12px;
+      padding: 24px;
+      margin: 28px 0;
+      text-align: left;
+    }
+
+    .timeline-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+
+    .timeline-step {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .timeline-step:last-child { margin-bottom: 0; }
+
+    .t-dot {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .t-dot.done    { background: #e6f4ea; color: #34a853; }
+    .t-dot.pending { background: #e8f0fe; color: #4285F4; }
+    .t-dot.waiting { background: #f0f4f8; color: #aaa; }
+
+    .t-text h4 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin: 0 0 3px;
+    }
+
+    .t-text p {
+      font-size: 13px;
+      color: #888;
+      margin: 0;
+      line-height: 1.5;
+    }
+
+    .spam-note {
+      background: #fff8e1;
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-size: 13px;
+      color: #8a6000;
+      font-weight: 500;
+      margin: 20px 0;
+      text-align: center;
+    }
+
+    .action-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 28px;
+    }
+
+    .btn-back {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #4285F4, #2b6de0);
+      color: white;
+      border: none;
+      border-radius: 10px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+      text-align: center;
+      box-sizing: border-box;
+      transition: opacity 0.2s;
+    }
+
+    .btn-back:hover { opacity: 0.9; }
+
+    .btn-support {
+      display: block;
+      width: 100%;
+      padding: 13px;
+      background: transparent;
+      color: #4285F4;
+      border: 1.5px solid #4285F4;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      text-align: center;
+      box-sizing: border-box;
+      transition: all 0.2s;
+    }
+
+    .btn-support:hover {
+      background: #e8f0fe;
+    }
+
+    .divider {
+      border: none;
+      border-top: 1px solid #f0f0f0;
+      margin: 28px 0;
+    }
+
+    .trust-row {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #aaa;
+    }
+
+    @media (max-width: 480px) {
+      .success-card { padding: 36px 24px; }
+      .success-card h1 { font-size: 22px; }
+    }
+  </style>
 </head>
 <body>
-<nav class="nav">
+
+<nav class="nav" aria-label="Main navigation">
   <div class="nav-inner">
     <a class="nav-logo" href="index.html">⚡ Veltrix</a>
+    <div class="nav-links">
+      <a href="index.html">← Back to Store</a>
+    </div>
   </div>
 </nav>
 
-<section class="hero">
-  <div class="hero-inner">
-    <div style="font-size:64px;margin-bottom:20px;">✅</div>
-    <h1>Payment Submitted</h1>
-    <p>We're verifying your transaction now.<br/>
-       Your files will be in your inbox within <strong>1 hour</strong>.</p>
-    <div class="hero-cta">
-      <a class="btn btn-white" href="index.html">Back to Store</a>
-      <a class="btn btn-outline" href="posts.html">Read the Blog</a>
-    </div>
-  </div>
-</section>
+<div class="success-wrap">
+  <div class="success-card" role="main">
 
-<footer class="footer">
-  <div class="footer-inner">
-    <span>⚡ Veltrix Creator Tools · 2026</span>
+    <span class="success-icon" aria-hidden="true">✅</span>
+
+    <h1>Payment Submitted!</h1>
+
+    <!-- Product name injected from URL param by JS -->
+    <div class="product-tag" id="product-tag">Processing…</div>
+
+    <p>
+      We've received your payment details and are now verifying
+      your transaction on the blockchain.
+    </p>
+
+    <!-- Timeline -->
+    <div class="timeline" aria-label="What happens next">
+      <div class="timeline-title">What happens next</div>
+
+      <div class="timeline-step">
+        <div class="t-dot done" aria-label="Completed">✓</div>
+        <div class="t-text">
+          <h4>Payment details received</h4>
+          <p>Your TXID and email have been logged.</p>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="t-dot pending" aria-label="In progress">⏳</div>
+        <div class="t-text">
+          <h4>Transaction verification</h4>
+          <p>We confirm your TXID on the blockchain. Usually under 30 minutes.</p>
+        </div>
+      </div>
+
+      <div class="timeline-step">
+        <div class="t-dot waiting" aria-label="Pending">📦</div>
+        <div class="t-text">
+          <h4>Files delivered to your inbox</h4>
+          <p>Your product arrives as an email attachment within 1 hour of verification.</p>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="spam-note" role="note">
+      📬 <strong>Check your spam folder</strong> if you don't see the email within 1 hour.
+      Add <strong>creator.tools@atomicmail.io</strong> to your contacts now.
+    </div>
+
+    <hr class="divider"/>
+
+    <p style="font-size:13px;color:#888;margin:0;">
+      Something wrong or taking longer than expected?
+    </p>
+
+    <div class="action-buttons">
+      <a class="btn-back" href="index.html">
+        ← Browse More Tools
+      </a>
+      <a class="btn-support"
+         href="mailto:creator.tools@atomicmail.io?subject=Payment%20Support%20Request">
+        📧 Email Support
+      </a>
+    </div>
+
+    <hr class="divider"/>
+
+    <div class="trust-row">
+      <div class="trust-item"><span aria-hidden="true">🛡️</span><span>7-day guarantee</span></div>
+      <div class="trust-item"><span aria-hidden="true">⚡</span><span>Delivered within 1 hour</span></div>
+      <div class="trust-item"><span aria-hidden="true">🔒</span><span>Verified manually</span></div>
+    </div>
+
   </div>
-</footer>
+</div>
+
+<script>
+  // Read ?product= from URL and display it
+  document.addEventListener("DOMContentLoaded", function () {
+    const params  = new URLSearchParams(window.location.search);
+    const product = params.get("product");
+    const tag     = document.getElementById("product-tag");
+
+    if (product && product.trim()) {
+      tag.textContent = decodeURIComponent(product);
+    } else {
+      tag.textContent = "Your purchase";
+    }
+
+    // Update page title too
+    if (product) {
+      document.title = product + " — Payment Submitted · Veltrix";
+    }
+  });
+</script>
+
 </body>
 </html>
