@@ -1,0 +1,563 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="x-auth-token" content="{{ AUTH_TOKEN }}"/>
+  <title>How to Automate Your Sponsor Reports — Veltrix</title>
+  <meta name="description"
+        content="Stop copy-pasting stats every Monday. Set up a script that pulls your YouTube data and emails a PDF to your sponsor automatically."/>
+  <link rel="stylesheet" href="../assets/style.css"/>
+  <style>
+    /* ── Article Layout ── */
+    .article-hero {
+      background: linear-gradient(160deg, #0a0a1a 0%, #0d2137 100%);
+      color: white;
+      padding: 64px 24px 56px;
+      text-align: center;
+    }
+
+    .article-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.15);
+      padding: 5px 16px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 20px;
+      color: #7ab3ff;
+    }
+
+    .article-hero h1 {
+      font-size: 38px;
+      font-weight: 900;
+      line-height: 1.15;
+      max-width: 720px;
+      margin: 0 auto 16px;
+      letter-spacing: -0.5px;
+    }
+
+    .article-meta {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 16px;
+      font-size: 13px;
+      opacity: 0.55;
+      flex-wrap: wrap;
+    }
+
+    /* ── Article Body ── */
+    .article-wrap {
+      background: #f0f4f8;
+      padding: 48px 24px 80px;
+    }
+
+    .article-inner {
+      max-width: 720px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .article-body {
+      background: white;
+      border-radius: 14px;
+      padding: 48px 52px;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.07);
+      font-size: 16px;
+      line-height: 1.8;
+      color: #333;
+    }
+
+    .article-body h2 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #1a1a2e;
+      margin: 40px 0 14px;
+      line-height: 1.25;
+    }
+
+    .article-body h3 {
+      font-size: 19px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin: 28px 0 10px;
+    }
+
+    .article-body p  { margin: 0 0 18px; }
+    .article-body ul,
+    .article-body ol { padding-left: 24px; margin: 0 0 18px; }
+    .article-body li { margin-bottom: 8px; }
+
+    .article-body a {
+      color: #4285F4;
+      text-decoration: underline;
+    }
+
+    .article-body strong { color: #1a1a2e; }
+
+    /* Callout box */
+    .callout {
+      background: #e8f0fe;
+      border-left: 4px solid #4285F4;
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin: 24px 0;
+      font-size: 14px;
+      color: #1a1a2e;
+      line-height: 1.6;
+    }
+
+    .callout.green {
+      background: #e6f4ea;
+      border-color: #34a853;
+    }
+
+    .callout.yellow {
+      background: #fff8e1;
+      border-color: #f09000;
+      color: #5a3e00;
+    }
+
+    /* Code block */
+    .code-block {
+      background: #1a1a2e;
+      color: #e8eaed;
+      border-radius: 8px;
+      padding: 20px 24px;
+      font-family: 'Courier New', monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      overflow-x: auto;
+      margin: 20px 0;
+    }
+
+    /* Step list */
+    .step-list {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .step-num {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #4285F4;
+      color: white;
+      font-size: 13px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── Sidebar CTA ── */
+    .article-sidebar {
+      margin-top: 28px;
+    }
+
+    .sidebar-cta {
+      background: linear-gradient(135deg, #1a1a2e, #0d2137);
+      color: white;
+      border-radius: 14px;
+      padding: 32px 28px;
+      text-align: center;
+    }
+
+    .sidebar-cta .s-icon { font-size: 40px; margin-bottom: 12px; }
+
+    .sidebar-cta h4 {
+      font-size: 18px;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .sidebar-cta p {
+      font-size: 13px;
+      opacity: 0.65;
+      line-height: 1.6;
+      margin-bottom: 20px;
+    }
+
+    .sidebar-cta-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* ── Back link ── */
+    .back-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: #4285F4;
+      font-size: 14px;
+      font-weight: 600;
+      text-decoration: none;
+      margin-bottom: 24px;
+    }
+
+    .back-link:hover { text-decoration: underline; }
+
+    /* ── Related posts ── */
+    .related-section {
+      margin-top: 40px;
+    }
+
+    .related-title {
+      font-size: 14px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #888;
+      margin-bottom: 16px;
+    }
+
+    .related-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .related-card {
+      background: white;
+      border-radius: 10px;
+      padding: 20px;
+      text-decoration: none;
+      color: inherit;
+      border: 1.5px solid #e8eaed;
+      transition: border-color 0.2s, transform 0.2s;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+
+    .related-card:hover {
+      border-color: #4285F4;
+      transform: translateY(-2px);
+    }
+
+    .related-icon { font-size: 28px; flex-shrink: 0; }
+
+    .related-card h5 {
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a2e;
+      margin: 0 0 4px;
+      line-height: 1.3;
+    }
+
+    .related-card p {
+      font-size: 12px;
+      color: #888;
+      margin: 0;
+      line-height: 1.4;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 768px) {
+      .article-body  { padding: 32px 24px; }
+      .article-hero h1 { font-size: 26px; }
+      .related-grid  { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ── Nav ── -->
+<nav class="nav" aria-label="Main navigation">
+  <div class="nav-inner">
+    <a class="nav-logo" href="../index.html">⚡ Veltrix</a>
+    <div class="nav-links">
+      <a href="../index.html#products">Products</a>
+      <a href="../index.html#freebies">Free Tools</a>
+      <a href="../posts.html">Blog</a>
+      <a href="../index.html#faq">FAQ</a>
+    </div>
+    <a class="btn btn-blue"
+       href="../payment.html?product=sponsorship-bot"
+       style="padding:9px 20px;font-size:14px;">
+      Buy Now →
+    </a>
+  </div>
+</nav>
+
+<!-- ── Article Hero ── -->
+<div class="article-hero">
+  <div class="article-eyebrow">📚 Tutorial</div>
+  <h1>How to Automate Your Sponsor Reports with Google Apps Script</h1>
+  <div class="article-meta">
+    <span>📅 January 15, 2026</span>
+    <span>⏱ 8 min read</span>
+    <span>✍️ Veltrix Team</span>
+  </div>
+</div>
+
+<!-- ── Article Body ── -->
+<div class="article-wrap">
+  <div class="article-inner">
+
+    <a class="back-link" href="../posts.html">← Back to Blog</a>
+
+    <div class="article-body">
+
+      <p>
+        If you have even one active sponsorship, you're probably spending
+        at least an hour every week doing the same thing: opening your spreadsheet,
+        checking YouTube for updated stats, formatting numbers into an email,
+        and hitting send.
+      </p>
+
+      <p>
+        Multiply that by three sponsors and you're losing half a workday every week
+        to a task that a computer can do in 30 seconds. This guide shows you exactly
+        how to set it up.
+      </p>
+
+      <div class="callout">
+        💡 <strong>What you'll build:</strong> A Google Apps Script that pulls your
+        YouTube stats daily, generates a branded PDF report, and emails it to your
+        sponsor automatically — without you touching anything.
+      </div>
+
+      <h2>What You Need Before Starting</h2>
+
+      <ul>
+        <li>A Google account (free)</li>
+        <li>A YouTube channel with at least one sponsored video</li>
+        <li>A YouTube Data API key (free — we'll set this up below)</li>
+        <li>15–20 minutes for the initial setup</li>
+      </ul>
+
+      <div class="callout yellow">
+        ⚠️ <strong>No coding experience required.</strong> Everything in this
+        guide is copy-paste. If you can use Google Sheets you can do this.
+      </div>
+
+      <h2>Step 1 — Get Your YouTube API Key</h2>
+
+      <ol class="step-list">
+        <li>
+          <span class="step-num">1</span>
+          <span>Go to <strong>console.cloud.google.com</strong> and sign in with your Google account.</span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span>Create a new project — name it anything (e.g. "Sponsor Reports").</span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span>Go to <strong>APIs &amp; Services → Enable APIs</strong> and search for <strong>YouTube Data API v3</strong>. Enable it.</span>
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          <span>Go to <strong>Credentials → Create Credentials → API Key</strong>. Copy the key.</span>
+        </li>
+      </ol>
+
+      <div class="callout green">
+        ✅ The YouTube Data API is free for up to 10,000 requests per day.
+        Your script will only use around 12 requests per run — one per video.
+        You'll never hit the limit.
+      </div>
+
+      <h2>Step 2 — Set Up Your Google Sheet</h2>
+
+      <p>
+        Create a new Google Sheet. In Column A, paste the YouTube video URLs
+        you want to track. One URL per row, starting at row 2.
+        Row 1 is your header — label it <strong>Video URL</strong>.
+      </p>
+
+      <p>
+        Add these column headers in row 1:
+      </p>
+
+      <div class="code-block">
+A: Video URL
+B: Title
+C: Views
+D: Likes
+E: Sponsor
+F: Last Updated</div>
+
+      <p>
+        Column E is where you put your sponsor's name for each video.
+        This gets pulled into the PDF report automatically.
+      </p>
+
+      <h2>Step 3 — Add the Apps Script</h2>
+
+      <p>
+        In your Google Sheet, go to <strong>Extensions → Apps Script</strong>.
+        Delete any default code and paste your script.
+      </p>
+
+      <p>
+        The script does four things when it runs:
+      </p>
+
+      <ul>
+        <li>Reads every URL from Column A of your sheet</li>
+        <li>Calls the YouTube API for each video to get live stats</li>
+        <li>Updates Columns B through F with fresh data</li>
+        <li>Generates a PDF from the data and emails it to your sponsor</li>
+      </ul>
+
+      <h2>Step 4 — Set the Daily Trigger</h2>
+
+      <p>
+        In the Apps Script editor, go to the clock icon on the left sidebar
+        (Triggers). Click <strong>Add Trigger</strong>.
+      </p>
+
+      <ol class="step-list">
+        <li>
+          <span class="step-num">1</span>
+          <span>Set the function to <strong>runDailyReport</strong></span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span>Set the event source to <strong>Time-driven</strong></span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span>Set the type to <strong>Day timer</strong></span>
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          <span>Set the time to <strong>8am–9am</strong></span>
+        </li>
+      </ol>
+
+      <p>
+        Click Save. That's it. Every morning at 8am, the script runs,
+        pulls fresh stats, and emails your sponsor — automatically.
+      </p>
+
+      <div class="callout green">
+        ✅ From this point on you never need to think about sponsor reporting again.
+        The bot handles it every single morning.
+      </div>
+
+      <h2>Skip the Setup — Get the Full Bot</h2>
+
+      <p>
+        The steps above describe the logic. The
+        <a href="../payment.html?product=sponsorship-bot">Sponsorship Report Bot</a>
+        is the complete, production-ready version — including the full script file,
+        the PDF template, the email formatter, the web dashboard, and a
+        step-by-step setup guide that gets you live in under 20 minutes.
+      </p>
+
+      <p>
+        It also handles edge cases the basic setup doesn't:
+        multiple sponsors per video, stat history tracking,
+        error logging, and automatic retry if the API call fails.
+      </p>
+
+    </div><!-- /.article-body -->
+
+    <!-- ── Related Posts ── -->
+    <div class="related-section">
+      <div class="related-title">More from the Playbook</div>
+      <div class="related-grid">
+
+        <a class="related-card"
+           href="sponsorship-rate-calculator-guide.html">
+          <span class="related-icon">💰</span>
+          <div>
+            <h5>How Much Should You Charge for a Sponsorship in 2026?</h5>
+            <p>Strategy · 6 min read</p>
+          </div>
+        </a>
+
+        <a class="related-card"
+           href="cold-email-brands-youtube.html">
+          <span class="related-icon">📧</span>
+          <div>
+            <h5>The Cold Email Template That Landed Me a $3,000 Sponsorship</h5>
+            <p>Strategy · 5 min read</p>
+          </div>
+        </a>
+
+        <a class="related-card"
+           href="google-apps-script-youtube-api.html">
+          <span class="related-icon">🔧</span>
+          <div>
+            <h5>Connecting Google Apps Script to the YouTube Data API</h5>
+            <p>Tutorial · 10 min read</p>
+          </div>
+        </a>
+
+        <a class="related-card"
+           href="creator-sales-funnel-automation.html">
+          <span class="related-icon">🤖</span>
+          <div>
+            <h5>Build a 3-Step Sales Funnel for Your Creator Business</h5>
+            <p>Automation · 7 min read</p>
+          </div>
+        </a>
+
+      </div>
+    </div>
+
+    <!-- ── Sidebar CTA ── -->
+    <div class="article-sidebar">
+      <div class="sidebar-cta">
+        <div class="s-icon">📊</div>
+        <h4>Get the Full Bot — $90</h4>
+        <p>
+          Complete script, PDF template, web dashboard,
+          and setup guide. Live in under 20 minutes.
+          One-time payment. No subscription.
+        </p>
+        <div class="sidebar-cta-buttons">
+          <a class="btn btn-blue full-width"
+             href="../payment.html?product=sponsorship-bot">
+            Buy Now — Pay with Crypto
+          </a>
+          <a class="btn btn-outline full-width"
+             href="../index.html#freebies">
+            Try the Free Template First →
+          </a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ── Footer ── -->
+<footer class="footer" aria-label="Site footer">
+  <div class="footer-inner">
+    <span>⚡ Veltrix Creator Tools · 2026</span>
+    <div class="footer-links">
+      <a href="../index.html">Store</a>
+      <a href="../posts.html">Blog</a>
+      <a href="../index.html#freebies">Free Tools</a>
+      <a href="../payment.html?product=sponsorship-bot">Buy Now</a>
+      <a href="mailto:creator.tools@atomicmail.io">Support</a>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
