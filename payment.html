@@ -3,10 +3,11 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Checkout — Sponsorship Report Bot · Veltrix</title>
+  <meta name="x-auth-token" content="{{ AUTH_TOKEN }}"/>
+  <title>Checkout — Veltrix Creator Tools</title>
+  <meta name="robots" content="noindex"/>
   <link rel="stylesheet" href="assets/style.css"/>
   <style>
-    /* ── Page Layout ── */
     .checkout-wrap {
       min-height: 100vh;
       background: #f0f4f8;
@@ -22,7 +23,7 @@
       align-items: start;
     }
 
-    /* ── Left Panel ── */
+    /* ── Order Panel ── */
     .order-panel {
       background: white;
       border-radius: 14px;
@@ -30,7 +31,7 @@
       box-shadow: 0 2px 16px rgba(0,0,0,0.07);
     }
 
-    .order-panel .panel-title {
+    .panel-title {
       font-size: 13px;
       font-weight: 700;
       text-transform: uppercase;
@@ -62,7 +63,7 @@
 
     .product-info h2 {
       font-size: 18px;
-      margin-bottom: 6px;
+      margin: 0 0 6px;
       color: #1a1a2e;
     }
 
@@ -70,14 +71,16 @@
       font-size: 13px;
       color: #888;
       line-height: 1.5;
+      margin: 0;
     }
 
     .feature-list {
       list-style: none;
+      padding: 0;
+      margin: 0 0 24px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      margin-bottom: 24px;
     }
 
     .feature-list li {
@@ -147,9 +150,7 @@
       margin: 0;
     }
 
-    .guarantee strong { color: #1a1a2e; }
-
-    /* ── Right Panel ── */
+    /* ── Payment Panel ── */
     .payment-panel {
       background: white;
       border-radius: 14px;
@@ -159,19 +160,9 @@
       top: 80px;
     }
 
-    .payment-panel .panel-title {
-      font-size: 13px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      color: #888;
-      margin-bottom: 20px;
-    }
-
     /* Steps */
     .steps {
       display: flex;
-      gap: 0;
       margin-bottom: 28px;
       position: relative;
     }
@@ -214,50 +205,47 @@
     .step-dot.active .dot { background: #4285F4; color: white; }
     .step-dot.done   .dot { background: #34a853; color: white; }
 
-    .step-dot .dot-label {
+    .dot-label {
       font-size: 10px;
       color: #aaa;
       font-weight: 600;
-      letter-spacing: 0.3px;
       white-space: nowrap;
     }
 
     .step-dot.active .dot-label { color: #4285F4; }
     .step-dot.done   .dot-label { color: #34a853; }
 
-    /* Crypto Selector */
-    .crypto-selector {
+    /* Coin Selector */
+    .coin-selector {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
       margin-bottom: 20px;
     }
 
-    .crypto-option {
+    .coin-option {
       border: 2px solid #e8eaed;
       border-radius: 8px;
-      padding: 10px 8px;
+      padding: 8px 4px;
       text-align: center;
       cursor: pointer;
       transition: all 0.2s;
-      /* FIX — keyboard accessibility */
       outline-offset: 2px;
     }
 
-    .crypto-option:hover          { border-color: #4285F4; }
-    .crypto-option:focus          { outline: 2px solid #4285F4; }
-    .crypto-option.selected       { border-color: #4285F4; background: #e8f0fe; }
-    .crypto-option[aria-disabled="true"] {
-      opacity: 0.45;
+    .coin-option:hover          { border-color: #4285F4; }
+    .coin-option:focus          { outline: 2px solid #4285F4; }
+    .coin-option.selected       { border-color: #4285F4; background: #e8f0fe; }
+    .coin-option[aria-disabled="true"] {
+      opacity: 0.4;
       cursor: not-allowed;
       pointer-events: none;
     }
 
-    .crypto-option .c-icon  { font-size: 22px; margin-bottom: 4px; }
-    .crypto-option .c-name  { font-size: 11px; font-weight: 700; color: #333; }
-    .crypto-option .c-network { font-size: 10px; color: #888; }
+    .coin-option .c-icon  { font-size: 18px; margin-bottom: 3px; }
+    .coin-option .c-name  { font-size: 10px; font-weight: 700; color: #333; }
 
-    /* Amount Box */
+    /* Amount box */
     .amount-box {
       background: #f8f9fa;
       border-radius: 10px;
@@ -283,31 +271,34 @@
     }
 
     /* QR */
-    .qr-section { text-align: center; margin-bottom: 20px; }
+    .qr-section { text-align: center; margin-bottom: 16px; }
 
-    .qr-placeholder {
+    .qr-box {
       width: 140px;
       height: 140px;
-      margin: 0 auto 12px;
+      margin: 0 auto 10px;
       background: #f0f4f8;
       border-radius: 10px;
       border: 2px dashed #ddd;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 11px;
-      color: #bbb;
-      text-align: center;
-      padding: 8px;
-      line-height: 1.4;
       overflow: hidden;
     }
 
-    .qr-placeholder img {
+    .qr-box img {
       width: 100%;
       height: 100%;
       border-radius: 8px;
       display: block;
+    }
+
+    .qr-box .qr-placeholder-text {
+      font-size: 11px;
+      color: #bbb;
+      padding: 8px;
+      text-align: center;
+      line-height: 1.4;
     }
 
     /* Address */
@@ -323,7 +314,7 @@
 
     .address-text {
       font-family: monospace;
-      font-size: 12px;
+      font-size: 11px;
       color: #333;
       word-break: break-all;
       flex: 1;
@@ -352,10 +343,24 @@
       background: #fff8e1;
       border-radius: 6px;
       padding: 8px 12px;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
       text-align: center;
       font-weight: 600;
     }
+
+    /* Timer */
+    .timer-bar {
+      background: #fff8e1;
+      border-radius: 8px;
+      padding: 10px 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .timer-label { font-size: 12px; color: #888; }
+    .timer-count { font-size: 16px; font-weight: 800; color: #f09000; font-family: monospace; }
 
     /* Form */
     .field-group {
@@ -393,7 +398,6 @@
       font-size: 12px;
       color: #ea4335;
       display: none;
-      margin-top: 2px;
     }
 
     /* Submit */
@@ -425,38 +429,6 @@
       line-height: 1.5;
     }
 
-    /* Timer */
-    .timer-bar {
-      background: #fff8e1;
-      border-radius: 8px;
-      padding: 10px 14px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .timer-label { font-size: 12px; color: #888; }
-
-    .timer-count {
-      font-size: 16px;
-      font-weight: 800;
-      color: #f09000;
-      font-family: monospace;
-    }
-
-    /* Success */
-    .success-state {
-      display: none;
-      text-align: center;
-      padding: 20px 0;
-    }
-
-    .success-state .s-icon { font-size: 56px; margin-bottom: 16px; }
-    .success-state h3      { font-size: 20px; margin-bottom: 10px; color: #34a853; }
-    .success-state p       { font-size: 14px; color: #666; line-height: 1.6; }
-
-    /* Submit error box */
     .submit-error-box {
       display: none;
       color: #ea4335;
@@ -464,14 +436,14 @@
       border-radius: 8px;
       padding: 12px 16px;
       margin-top: 12px;
-      font-size: 14px;
+      font-size: 13px;
       line-height: 1.5;
     }
 
-    /* Trust Bar */
+    /* Trust bar */
     .trust-bar {
       display: flex;
-      gap: 16px;
+      gap: 12px;
       justify-content: center;
       flex-wrap: wrap;
       margin-top: 16px;
@@ -480,8 +452,8 @@
     .trust-item {
       display: flex;
       align-items: center;
-      gap: 6px;
-      font-size: 12px;
+      gap: 5px;
+      font-size: 11px;
       color: #888;
     }
 
@@ -498,24 +470,37 @@
       z-index: 9999;
       display: none;
       white-space: nowrap;
+      pointer-events: none;
     }
 
     .toast-success { background: #34a853; color: #fff; }
     .toast-error   { background: #ea4335; color: #fff; }
 
+    /* Loading state */
+    .wallet-loading {
+      text-align: center;
+      padding: 20px;
+      color: #888;
+      font-size: 13px;
+    }
+
     /* Responsive */
     @media (max-width: 768px) {
-      .checkout-grid        { grid-template-columns: 1fr; }
-      .payment-panel        { position: static; }
-      .order-panel          { padding: 24px 20px; }
-      .payment-panel        { padding: 24px 20px; }
+      .checkout-grid      { grid-template-columns: 1fr; }
+      .payment-panel      { position: static; }
+      .order-panel        { padding: 24px 20px; }
+      .payment-panel      { padding: 24px 20px; }
+      .coin-selector      { grid-template-columns: repeat(4, 1fr); }
+    }
+
+    @media (max-width: 480px) {
+      .coin-selector      { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
 <body>
 
-<!-- NAV -->
-<nav class="nav">
+<nav class="nav" aria-label="Main navigation">
   <div class="nav-inner">
     <a class="nav-logo" href="index.html">⚡ Veltrix</a>
     <div class="nav-links">
@@ -527,33 +512,27 @@
 <div class="checkout-wrap">
   <div class="checkout-grid">
 
-    <!-- ══════════════════════════════════
-         LEFT: ORDER SUMMARY
-    ══════════════════════════════════ -->
+    <!-- ══ LEFT: ORDER SUMMARY ══ -->
     <div class="order-panel">
       <div class="panel-title">Order Summary</div>
 
       <div class="product-summary">
-        <div class="product-thumb" aria-hidden="true">📊</div>
+        <div class="product-thumb" aria-hidden="true" id="product-icon">📊</div>
         <div class="product-info">
-          <h2>Sponsorship Report Bot</h2>
+          <h2 id="product-name">Sponsorship Report Bot</h2>
           <p>Google Apps Script · Instant delivery after payment verification</p>
         </div>
       </div>
 
-      <ul class="feature-list">
-        <li><span class="check" aria-hidden="true">✓</span>YouTube API integration — pulls live view &amp; like counts</li>
-        <li><span class="check" aria-hidden="true">✓</span>Auto PDF generation &amp; email delivery to brand contacts</li>
-        <li><span class="check" aria-hidden="true">✓</span>Live Google Sheets dashboard with web app interface</li>
-        <li><span class="check" aria-hidden="true">✓</span>Startup guide + one-click daily trigger setup</li>
-        <li><span class="check" aria-hidden="true">✓</span>Full source code — no subscriptions, no black box</li>
-        <li><span class="check" aria-hidden="true">✓</span>Lifetime updates included</li>
+      <!-- Features — swapped per product by JS -->
+      <ul class="feature-list" id="feature-list" aria-label="Product features">
+        <li><span class="check" aria-hidden="true">✓</span>Loading product details…</li>
       </ul>
 
       <div class="price-breakdown">
         <div class="price-row">
-          <span>Sponsorship Report Bot</span>
-          <span>$90.00</span>
+          <span id="price-label-row">Product</span>
+          <span id="price-usd-row">$90.00</span>
         </div>
         <div class="price-row">
           <span>Transaction fee</span>
@@ -561,7 +540,7 @@
         </div>
         <div class="price-row total">
           <span>Total</span>
-          <span>$90.00</span>
+          <span id="price-total">$90.00</span>
         </div>
       </div>
 
@@ -570,19 +549,16 @@
         <p>
           <strong>Satisfaction guarantee.</strong> If the script doesn't work
           in your Google account after following the setup guide, email us within
-          7 days and we'll fix it or refund you. <!--FIX — was broken mailto text, now a real link -->
+          7 days and we'll fix it or refund you.
           <a href="mailto:creator.tools@atomicmail.io">creator.tools@atomicmail.io</a>
         </p>
       </div>
     </div>
 
-    <!-- ══════════════════════════════════
-         RIGHT: PAYMENT PANEL
-    ══════════════════════════════════ -->
+    <!-- ══ RIGHT: PAYMENT PANEL ══ -->
     <div class="payment-panel">
       <div class="panel-title">Secure Checkout</div>
 
-      <!-- Step Indicators -->
       <div class="steps" role="list" aria-label="Checkout steps">
         <div class="step-dot done"   id="step1" role="listitem">
           <div class="dot" aria-hidden="true">✓</div>
@@ -598,81 +574,56 @@
         </div>
       </div>
 
-      <!-- ── Main Form ── -->
       <div id="payment-form">
 
-        <!-- Crypto Selector -->
-        <!-- FIX — tabindex + role so keyboard users can select currency -->
-        <p class="field-label" id="currency-label" style="margin-bottom:10px;">
-          Select currency
+        <!-- Coin selector — populated by JS from live wallet fetch -->
+        <p class="field-label" id="coin-label" style="margin-bottom:10px;">
+          Select coin
         </p>
-        <div class="crypto-selector" role="group" aria-labelledby="currency-label">
-          <div class="crypto-option selected"
-               role="radio" aria-checked="true" tabindex="0"
-               data-currency="USDT"
-               onclick="selectCrypto(this,'USDT')"
-               onkeydown="handleCryptoKey(event,this,'USDT')">
-            <div class="c-icon" aria-hidden="true">💵</div>
-            <div class="c-name">USDT</div>
-            <div class="c-network">BEP-20</div>
-          </div>
-          <div class="crypto-option"
-               role="radio" aria-checked="false" tabindex="0"
-               data-currency="USDC"
-               onclick="selectCrypto(this,'USDC')"
-               onkeydown="handleCryptoKey(event,this,'USDC')">
-            <div class="c-icon" aria-hidden="true">🔵</div>
-            <div class="c-name">USDC</div>
-            <div class="c-network">BEP-20</div>
-          </div>
-          <div class="crypto-option"
-               role="radio" aria-checked="false" tabindex="0"
-               data-currency="BNB"
-               onclick="selectCrypto(this,'BNB')"
-               onkeydown="handleCryptoKey(event,this,'BNB')">
-            <div class="c-icon" aria-hidden="true">🟡</div>
-            <div class="c-name">BNB</div>
-            <div class="c-network">BSC</div>
-          </div>
+        <div class="coin-selector"
+             id="coin-selector"
+             role="group"
+             aria-labelledby="coin-label">
+          <div class="wallet-loading">Fetching wallets…</div>
         </div>
 
         <!-- Amount -->
         <div class="amount-box" aria-live="polite" aria-atomic="true">
           <div>
             <div class="a-label">Amount to send</div>
-            <div class="a-value" id="display-amount">90.00 USDT</div>
+            <div class="a-value" id="display-amount">—</div>
           </div>
           <div class="a-sub">
-            ≈ $90.00 USD<br/>
-            <span id="rate-note" style="color:#34a853;font-weight:700;">1 : 1</span>
+            <span id="usd-equiv"></span><br/>
+            <span id="rate-note" style="color:#34a853;font-weight:700;"></span>
           </div>
         </div>
 
-        <!-- QR Code -->
+        <!-- QR -->
         <div class="qr-section">
-          <div class="qr-placeholder" id="qr-box">
-            <!-- src and alt set by JS on DOMContentLoaded -->
-            <img id="qr-img" src="" alt="Loading QR code…"/>
+          <div class="qr-box" id="qr-box">
+            <span class="qr-placeholder-text">Select a coin<br/>to see QR</span>
           </div>
         </div>
 
-        <!-- Wallet Address -->
+        <!-- Address -->
         <div class="address-box">
-          <!-- FIX — textContent written by JS; no hardcoded placeholder -->
-          <span class="address-text" id="wallet-address"></span>
-          <button class="copy-btn" onclick="copyAddress()" aria-label="Copy wallet address">
+          <span class="address-text" id="wallet-address">Select a coin above</span>
+          <button class="copy-btn"
+                  onclick="copyAddress()"
+                  aria-label="Copy wallet address">
             Copy
           </button>
         </div>
 
-        <!-- Network Warning -->
+        <!-- Network warning -->
         <div class="network-note" id="network-note" role="alert">
-          ⚠️ Send only on BNB Smart Chain (BEP-20). Wrong network = lost funds.
+          ⚠️ Select a coin to see network details.
         </div>
 
-        <!-- Countdown Timer -->
+        <!-- Timer -->
         <div class="timer-bar" aria-live="off">
-          <span class="timer-label">⏱ Address reserved for</span>
+          <span class="timer-label">⏱ Session expires in</span>
           <span class="timer-count" id="timer" aria-label="Time remaining">30:00</span>
         </div>
 
@@ -698,7 +649,7 @@
           <input type="text"
                  id="buyer-txid"
                  class="field-input"
-                 placeholder="0xabc123…"
+                 placeholder="Paste your TX hash here…"
                  autocomplete="off"
                  spellcheck="false"
                  aria-describedby="txid-error"
@@ -707,16 +658,16 @@
         </div>
 
         <!-- Submit -->
-        <button class="submit-btn" id="submit-btn" onclick="submitPayment()">
+        <button class="submit-btn"
+                id="submit-btn"
+                onclick="submitPayment()">
           <span id="btn-text">✅ I've Sent Payment</span>
         </button>
 
-        <!-- FIX — submit error box lives in HTML, toggled by JS -->
         <div class="submit-error-box" id="submit-error" role="alert"></div>
 
         <p class="submit-note">
-          We verify payments manually. Your files arrive within 1 hour.<br/>
-          <!-- FIX — proper mailto link -->
+          We verify payments manually within 1 hour.<br/>
           Questions? <a href="mailto:creator.tools@atomicmail.io">creator.tools@atomicmail.io</a>
         </p>
 
@@ -727,216 +678,331 @@
         </div>
 
       </div><!-- /#payment-form -->
-
-      <!-- Success State -->
-      <div class="success-state" id="success-state" role="status">
-        <div class="s-icon" aria-hidden="true">✅</div>
-        <h3>Payment Submitted!</h3>
-        <p>
-          We've received your details and are verifying your transaction.<br/><br/>
-          <strong>Your files will arrive within 1 hour.</strong><br/><br/>
-          Check your spam folder if you don't see the email.<br/>
-          Need help?
-          <a href="mailto:creator.tools@atomicmail.io">creator.tools@atomicmail.io</a>
-        </p>
-        <br/>
-        <a class="btn btn-blue" href="index.html"
-           style="display:inline-block;margin-top:8px;">
-          ← Back to Store
-        </a>
-      </div>
-
     </div><!-- /.payment-panel -->
   </div><!-- /.checkout-grid -->
-</div><!-- /.checkout-wrap -->
+</div>
 
-<!-- Toast (in HTML so it's always present) -->
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 // ============================================================
 // CONFIG
 // ============================================================
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwF7ERZamKSSs7AJoB6Pi63Xj4fG0Qkf8Yu9YNVNmVWG_Z9TqYAFF4O9TI6y6EDlifkfw/exec";
-const AUTH_TOKEN      = "YOUR_AUTH_TOKEN_HERE"; // replace with your generated token
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwF7ERZamKSSs7AJoB6Pi63Xj4fG0Qkf8Yu9YNVNmVWG_Z9TqYAFF4O9TI6y6EDlifkfw/exec";
 
-const WALLET = {
-  address: "YOUR_WALLET_ADDRESS" // replace with your actual wallet address
+const AUTH_TOKEN = (function () {
+  const meta = document.querySelector('meta[name="x-auth-token"]');
+  if (!meta) { console.error("AUTH_TOKEN meta tag missing"); return ""; }
+  const val = meta.getAttribute("content");
+  if (!val || val === "{{ AUTH_TOKEN }}") {
+    console.warn("AUTH_TOKEN not injected — GitHub Actions may not have run yet.");
+    return "";
+  }
+  return val;
+}());
+
+// ============================================================
+// PRODUCTS — dynamic from URL ?product=
+// ============================================================
+const PRODUCTS = {
+  "sponsorship-bot": {
+    id:       "sponsorship-bot",
+    name:     "Sponsorship Report Bot",
+    icon:     "📊",
+    price:    90,
+    features: [
+      "YouTube API — unlimited videos",
+      "Auto PDF generation daily",
+      "Emails sponsor automatically",
+      "Live web dashboard",
+      "Full source code",
+      "Lifetime updates",
+      "7-day guarantee"
+    ]
+  },
+  "sales-bot": {
+    id:       "sales-bot",
+    name:     "Creator Sales Bot",
+    icon:     "🤖",
+    price:    65,
+    features: [
+      "Google Sheets CRM built in",
+      "Auto lead magnet delivery",
+      "3-day upsell sequence",
+      "50 email/day safety limit",
+      "Full error logging",
+      "Pause / resume anytime",
+      "Live CRM dashboard"
+    ]
+  },
+  "bundle": {
+    id:       "bundle",
+    name:     "Full Creator Bundle",
+    icon:     "📦",
+    price:    130,
+    features: [
+      "Everything in both tools",
+      "Combined single script file",
+      "One dashboard for both bots",
+      "Priority email support",
+      "Future tools included free",
+      "Lifetime updates",
+      "7-day guarantee"
+    ]
+  }
 };
 
-const CRYPTO_CONFIG = {
-  USDT: { symbol: "USDT", rate: 1.00, network: "BNB Smart Chain (BEP-20)", icon: "💵" },
-  USDC: { symbol: "USDC", rate: 1.00, network: "BNB Smart Chain (BEP-20)", icon: "🔵" },
-  BNB:  { symbol: "BNB",  rate: null, network: "BNB Smart Chain (BSC)",    icon: "🟡" }
-};
-
-const PRODUCT = {
-  id:    "sponsorship-bot",
-  name:  "Sponsorship Report Bot",
-  price: 90
+// ============================================================
+// COIN CONFIG — icons and display names
+// Addresses fetched live from Apps Script
+// ============================================================
+const COIN_META = {
+  BNB:  { icon: "🟡", label: "BNB" },
+  USDT: { icon: "💵", label: "USDT" },
+  USDC: { icon: "🔵", label: "USDC" },
+  BTC:  { icon: "🟠", label: "BTC" },
+  ETH:  { icon: "🔷", label: "ETH" },
+  SOL:  { icon: "🟣", label: "SOL" },
+  TRX:  { icon: "🔴", label: "TRX" },
+  LTC:  { icon: "⚪", label: "LTC" },
+  DOGE: { icon: "🐕", label: "DOGE" },
+  ADA:  { icon: "🔵", label: "ADA" },
+  BCH:  { icon: "🟢", label: "BCH" },
+  XRP:  { icon: "⚫", label: "XRP" },
+  DASH: { icon: "🔵", label: "DASH" },
+  ZEC:  { icon: "🟡", label: "ZEC" },
+  XLM:  { icon: "⚪", label: "XLM" },
+  DGB:  { icon: "🔵", label: "DGB" }
 };
 
 // ============================================================
 // STATE
 // ============================================================
-let selectedCrypto = "USDT";
-let timerInterval  = null;
-let bnbPrice       = null;
-let submitLocked   = false;
+let currentProduct  = null;
+let selectedCoin    = null;
+let wallets         = {};        // fetched from Apps Script
+let coinPrices      = {};        // fetched from CoinGecko
+let timerInterval   = null;
+let submitLocked    = false;
+let currentAddress  = "";
 
 // ============================================================
 // INIT
 // ============================================================
 document.addEventListener("DOMContentLoaded", function () {
+  loadProduct();
+  fetchWallets();
+  fetchCoinPrices();
+  startTimer(30 * 60);
 
-  // Write wallet address into DOM — single source of truth
-  const addrEl = document.getElementById("wallet-address");
-  if (addrEl) addrEl.textContent = WALLET.address;
-
-  // Build QR from the real address
-  updateQR(WALLET.address);
-
-  // Wire up input listeners in JS (not fragile inline HTML attributes)
   document.getElementById("buyer-email").addEventListener("input", function () {
     clearFieldError("email-error", "buyer-email");
   });
   document.getElementById("buyer-txid").addEventListener("input", function () {
     clearFieldError("txid-error", "buyer-txid");
   });
-
-  // Start session timer
-  startTimer(30 * 60);
-
-  // Fetch live BNB price in background
-  fetchBnbPrice();
 });
 
 // ============================================================
-// KEYBOARD SUPPORT FOR CRYPTO OPTIONS
+// PRODUCT LOADER — reads ?product= from URL
 // ============================================================
-function handleCryptoKey(event, el, currency) {
-  if (event.key === "Enter" || event.key === " ") {
-    event.preventDefault();
-    selectCrypto(el, currency);
-  }
+function loadProduct() {
+  const params = new URLSearchParams(window.location.search);
+  const key    = params.get("product") || "sponsorship-bot";
+  const p      = PRODUCTS[key] || PRODUCTS["sponsorship-bot"];
+  currentProduct = p;
+
+  document.title              = "Checkout — " + p.name + " · Veltrix";
+  document.getElementById("product-name").textContent  = p.name;
+  document.getElementById("product-icon").textContent  = p.icon;
+  document.getElementById("price-label-row").textContent = p.name;
+  document.getElementById("price-usd-row").textContent   = "$" + p.price.toFixed(2);
+  document.getElementById("price-total").textContent      = "$" + p.price.toFixed(2);
+
+  const list = document.getElementById("feature-list");
+  list.innerHTML = p.features.map(function (f) {
+    return '<li><span class="check" aria-hidden="true">✓</span>' + f + '</li>';
+  }).join("");
 }
 
 // ============================================================
-// CRYPTO SELECTOR
+// WALLET FETCHER — live from Apps Script doGet
 // ============================================================
-function selectCrypto(el, currency) {
-  if (!CRYPTO_CONFIG[currency]) {
-    console.error("selectCrypto: unknown currency — " + currency);
-    return;
-  }
+function fetchWallets() {
+  fetch(GAS_URL + "?action=getAddresses")
+    .then(function (res) {
+      if (!res.ok) throw new Error("HTTP " + res.status);
+      return res.json();
+    })
+    .then(function (data) {
+      if (data.error) throw new Error(data.error);
+      wallets = data;
+      buildCoinSelector();
+    })
+    .catch(function (err) {
+      console.error("fetchWallets:", err.message);
+      document.getElementById("coin-selector").innerHTML =
+        '<p style="color:#ea4335;font-size:13px;padding:8px;">Could not load wallets — please refresh or contact support.</p>';
+    });
+}
 
-  // Update visual + ARIA state on all options
-  document.querySelectorAll(".crypto-option").forEach(function (opt) {
-    opt.classList.remove("selected");
-    opt.setAttribute("aria-checked", "false");
+// ============================================================
+// COIN PRICE FETCHER — CoinGecko free API
+// ============================================================
+function fetchCoinPrices() {
+  const ids = "bitcoin,litecoin,dogecoin,bitcoin-cash,dash,zcash,ripple,cardano,binancecoin,stellar,digibyte,solana,tron";
+  fetch("https://api.coingecko.com/api/v3/simple/price?ids=" + ids + "&vs_currencies=usd")
+    .then(function (res) { return res.json(); })
+    .then(function (data) {
+      coinPrices = {
+        BTC:  data.bitcoin         && data.bitcoin.usd,
+        LTC:  data.litecoin        && data.litecoin.usd,
+        DOGE: data.dogecoin        && data.dogecoin.usd,
+        BCH:  data["bitcoin-cash"] && data["bitcoin-cash"].usd,
+        DASH: data.dash            && data.dash.usd,
+        ZEC:  data.zcash           && data.zcash.usd,
+        XRP:  data.ripple          && data.ripple.usd,
+        ADA:  data.cardano         && data.cardano.usd,
+        BNB:  data.binancecoin     && data.binancecoin.usd,
+        XLM:  data.stellar         && data.stellar.usd,
+        DGB:  data.digibyte        && data.digibyte.usd,
+        SOL:  data.solana          && data.solana.usd,
+        TRX:  data.tron            && data.tron.usd,
+        USDT: 1.00,
+        USDC: 1.00
+      };
+      if (selectedCoin) updateAmountDisplay();
+    })
+    .catch(function (err) {
+      console.warn("CoinGecko fetch failed:", err.message);
+      coinPrices = { USDT: 1.00, USDC: 1.00 };
+      if (selectedCoin) updateAmountDisplay();
+    });
+}
+
+// ============================================================
+// BUILD COIN SELECTOR
+// ============================================================
+function buildCoinSelector() {
+  const selector = document.getElementById("coin-selector");
+  selector.innerHTML = "";
+
+  Object.keys(wallets).forEach(function (ticker) {
+    const meta = COIN_META[ticker] || { icon: "💰", label: ticker };
+    const btn  = document.createElement("div");
+    btn.className   = "coin-option";
+    btn.role        = "radio";
+    btn.tabIndex    = 0;
+    btn.setAttribute("aria-checked", "false");
+    btn.dataset.coin = ticker;
+    btn.innerHTML =
+      '<div class="c-icon" aria-hidden="true">' + meta.icon + '</div>' +
+      '<div class="c-name">' + meta.label + '</div>';
+
+    btn.addEventListener("click",    function () { selectCoin(ticker); });
+    btn.addEventListener("keydown",  function (e) {
+      if (e.key === "Enter" || e.key === " ") { e.preventDefault(); selectCoin(ticker); }
+    });
+
+    selector.appendChild(btn);
   });
-  el.classList.add("selected");
-  el.setAttribute("aria-checked", "true");
 
-  selectedCrypto = currency;
+  // Auto-select first available stablecoin or first coin
+  const preferred = ["USDT", "USDC", "BNB"];
+  const autoSelect = preferred.find(function (t) { return wallets[t]; })
+                  || Object.keys(wallets)[0];
+  if (autoSelect) selectCoin(autoSelect);
+}
+
+// ============================================================
+// COIN SELECTION
+// ============================================================
+function selectCoin(ticker) {
+  if (!wallets[ticker]) return;
+
+  selectedCoin    = ticker;
+  currentAddress  = wallets[ticker].address;
+  const network   = wallets[ticker].network || ticker;
+
+  // Update UI selection state
+  document.querySelectorAll(".coin-option").forEach(function (opt) {
+    const isSelected = opt.dataset.coin === ticker;
+    opt.classList.toggle("selected", isSelected);
+    opt.setAttribute("aria-checked", isSelected ? "true" : "false");
+  });
+
+  // Update network note
+  const noteEl = document.getElementById("network-note");
+  if (noteEl) noteEl.textContent = "⚠️ Send only on " + network + ". Wrong network = lost funds.";
+
+  // Update address display
+  document.getElementById("wallet-address").textContent = currentAddress;
+
+  // Update QR
+  updateQR(currentAddress);
+
+  // Update amount
   updateAmountDisplay();
-
-  // Update network warning
-  const networkEl = document.getElementById("network-note");
-  if (networkEl) {
-    networkEl.textContent =
-      "⚠️ Send only on " + CRYPTO_CONFIG[currency].network + ". Wrong network = lost funds.";
-  }
 }
 
 // ============================================================
 // AMOUNT DISPLAY
 // ============================================================
 function updateAmountDisplay() {
-  const cfg      = CRYPTO_CONFIG[selectedCrypto];
+  if (!currentProduct || !selectedCoin) return;
+
+  const price    = currentProduct.price;
   const amountEl = document.getElementById("display-amount");
   const rateEl   = document.getElementById("rate-note");
+  const usdEl    = document.getElementById("usd-equiv");
 
-  if (selectedCrypto === "BNB") {
-    if (!bnbPrice) {
-      if (amountEl) amountEl.textContent = "Loading BNB price…";
-      if (rateEl)   rateEl.textContent   = "";
-      return;
-    }
-    const amount = (PRODUCT.price / bnbPrice).toFixed(4);
-    if (amountEl) amountEl.textContent = amount + " BNB";
-    if (rateEl)   rateEl.textContent   = "1 BNB ≈ $" + bnbPrice.toFixed(2);
+  if (selectedCoin === "USDT" || selectedCoin === "USDC") {
+    amountEl.textContent = price.toFixed(2) + " " + selectedCoin;
+    rateEl.textContent   = "1 : 1";
+    usdEl.textContent    = "≈ $" + price.toFixed(2) + " USD";
     return;
   }
 
-  // USDT / USDC — always 1:1
-  if (amountEl) amountEl.textContent = PRODUCT.price.toFixed(2) + " " + cfg.symbol;
-  if (rateEl)   rateEl.textContent   = "1 : 1";
-}
+  const rate = coinPrices[selectedCoin];
+  if (!rate) {
+    amountEl.textContent = "Fetching price…";
+    rateEl.textContent   = "";
+    usdEl.textContent    = "";
+    return;
+  }
 
-// ============================================================
-// BNB PRICE
-// ============================================================
-function fetchBnbPrice() {
-  fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd")
-    .then(function (res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.json();
-    })
-    .then(function (data) {
-      if (
-        data && data.binancecoin &&
-        typeof data.binancecoin.usd === "number" &&
-        data.binancecoin.usd > 0
-      ) {
-        bnbPrice = data.binancecoin.usd;
-      } else {
-        throw new Error("Unexpected response shape");
-      }
-      updateAmountDisplay();
-    })
-    .catch(function (err) {
-      console.warn("BNB price fetch failed:", err.message);
-      bnbPrice = 600; // safe fallback estimate
-      updateAmountDisplay();
-      const rateEl = document.getElementById("rate-note");
-      if (rateEl && selectedCrypto === "BNB") {
-        rateEl.textContent += " (estimated — live price unavailable)";
-      }
-    });
+  const cryptoAmt = (price / rate).toFixed(6).replace(/\.?0+$/, "");
+  amountEl.textContent = cryptoAmt + " " + selectedCoin;
+  rateEl.textContent   = "1 " + selectedCoin + " ≈ $" + rate.toFixed(2);
+  usdEl.textContent    = "≈ $" + price.toFixed(2) + " USD";
 }
 
 // ============================================================
 // QR CODE
 // ============================================================
 function updateQR(address) {
+  const box = document.getElementById("qr-box");
+  if (!address) { box.innerHTML = '<span class="qr-placeholder-text">Select a coin to see QR</span>'; return; }
+
+  box.innerHTML = '<img id="qr-img" src="" alt="Loading QR…" style="width:100%;height:100%;border-radius:8px;"/>';
   const img = document.getElementById("qr-img");
-  if (!img) return;
-
-  img.alt = "Loading QR code…";
-  img.src = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data="
-            + encodeURIComponent(address);
-
-  img.onload  = function () { img.alt = "Wallet QR code for " + address; };
-  img.onerror = function () {
-    img.style.display = "none";
-    const box = document.getElementById("qr-box");
-    if (box) box.textContent = "QR unavailable — copy the address below";
-  };
+  img.src = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=" + encodeURIComponent(address);
+  img.onload  = function () { img.alt = "Wallet QR code"; };
+  img.onerror = function () { box.innerHTML = '<span class="qr-placeholder-text">QR unavailable — copy address below</span>'; };
 }
 
 // ============================================================
 // COPY ADDRESS
 // ============================================================
 function copyAddress() {
-  const address = WALLET.address; // always read from JS constant, never from DOM
+  if (!currentAddress) { showToast("No address selected yet.", "error"); return; }
 
   if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(address)
+    navigator.clipboard.writeText(currentAddress)
       .then(function () { showToast("Address copied!", "success"); })
-      .catch(function ()  { fallbackCopy(address); });
+      .catch(function ()  { fallbackCopy(currentAddress); });
   } else {
-    fallbackCopy(address);
+    fallbackCopy(currentAddress);
   }
 }
 
@@ -947,61 +1013,50 @@ function fallbackCopy(text) {
   document.body.appendChild(ta);
   ta.focus();
   ta.select();
-  try {
-    document.execCommand("copy");
-    showToast("Address copied!", "success");
-  } catch (e) {
-    showToast("Copy failed — please copy the address manually.", "error");
-  }
+  try { document.execCommand("copy"); showToast("Address copied!", "success"); }
+  catch (e) { showToast("Copy failed — please copy manually.", "error"); }
   document.body.removeChild(ta);
 }
 
 // ============================================================
-// COUNTDOWN TIMER
+// TIMER
 // ============================================================
 function startTimer(seconds) {
-  if (timerInterval) clearInterval(timerInterval); // guard against double-start
+  if (timerInterval) clearInterval(timerInterval);
   let remaining = seconds;
 
   timerInterval = setInterval(function () {
     remaining--;
     const m = String(Math.floor(remaining / 60)).padStart(2, "0");
     const s = String(remaining % 60).padStart(2, "0");
-
-    const timerEl = document.getElementById("timer");
-    if (!timerEl) return;
-    timerEl.textContent = m + ":" + s;
+    const el = document.getElementById("timer");
+    if (el) el.textContent = m + ":" + s;
 
     if (remaining <= 0) {
       clearInterval(timerInterval);
-      timerInterval = null;
-      timerEl.textContent = "Expired";
-      timerEl.style.color = "#ea4335";
+      if (el) { el.textContent = "Expired"; el.style.color = "#ea4335"; }
       lockForm("Session expired — please refresh to start a new order.");
     }
   }, 1000);
 }
 
 // ============================================================
-// FORM VALIDATION
+// VALIDATION
 // ============================================================
 function validateForm() {
   let valid = true;
 
-  const email = document.getElementById("buyer-email").value.trim();
-  const txid  = document.getElementById("buyer-txid").value.trim();
-
-  // Reset
   clearFieldError("email-error", "buyer-email");
   clearFieldError("txid-error",  "buyer-txid");
 
-  // Email
+  const email = document.getElementById("buyer-email").value.trim();
+  const txid  = document.getElementById("buyer-txid").value.trim();
+
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
     showFieldError("email-error", "buyer-email", "Please enter a valid email address.");
     valid = false;
   }
 
-  // TXID
   if (!txid) {
     showFieldError("txid-error", "buyer-txid", "Please paste your transaction ID.");
     valid = false;
@@ -1009,43 +1064,40 @@ function validateForm() {
     showFieldError("txid-error", "buyer-txid", "Transaction ID should not contain spaces.");
     valid = false;
   } else if (txid.length < 10) {
-    showFieldError("txid-error", "buyer-txid", "Transaction ID looks too short — please check it.");
+    showFieldError("txid-error", "buyer-txid", "Transaction ID looks too short.");
     valid = false;
   }
 
-  // BNB with no live price
-  if (valid && selectedCrypto === "BNB" && !bnbPrice) {
-    showToast("BNB price unavailable — please select USDT or USDC.", "error");
+  if (!selectedCoin) {
+    showToast("Please select a coin first.", "error");
     valid = false;
   }
 
   return valid;
 }
 
-function showFieldError(errorId, inputId, message) {
-  const errEl   = document.getElementById(errorId);
-  const inputEl = document.getElementById(inputId);
-  if (errEl)   { errEl.textContent = message; errEl.style.display = "block"; }
-  if (inputEl) inputEl.classList.add("error");
+function showFieldError(errorId, inputId, msg) {
+  const e = document.getElementById(errorId);
+  const i = document.getElementById(inputId);
+  if (e) { e.textContent = msg; e.style.display = "block"; }
+  if (i) i.classList.add("error");
 }
 
 function clearFieldError(errorId, inputId) {
-  const errEl   = document.getElementById(errorId);
-  const inputEl = document.getElementById(inputId);
-  if (errEl)   { errEl.textContent = ""; errEl.style.display = "none"; }
-  if (inputEl) inputEl.classList.remove("error");
+  const e = document.getElementById(errorId);
+  const i = document.getElementById(inputId);
+  if (e) { e.textContent = ""; e.style.display = "none"; }
+  if (i) i.classList.remove("error");
 }
 
-function lockForm(message) {
+function lockForm(msg) {
   submitLocked = true;
-  const btn     = document.getElementById("submit-btn");
-  const btnText = document.getElementById("btn-text");
-  if (btn)     btn.disabled = true;
-  if (btnText) btnText.textContent = message || "Unavailable";
-
-  // Disable currency options too
-  document.querySelectorAll(".crypto-option").forEach(function (opt) {
-    opt.setAttribute("aria-disabled", "true");
+  const btn  = document.getElementById("submit-btn");
+  const text = document.getElementById("btn-text");
+  if (btn)  btn.disabled = true;
+  if (text) text.textContent = msg || "Unavailable";
+  document.querySelectorAll(".coin-option").forEach(function (o) {
+    o.setAttribute("aria-disabled", "true");
   });
 }
 
@@ -1056,124 +1108,77 @@ function submitPayment() {
   if (submitLocked) return;
   if (!validateForm()) return;
 
-  const email = document.getElementById("buyer-email").value.trim();
-  const txid  = document.getElementById("buyer-txid").value.trim();
-  const cfg   = CRYPTO_CONFIG[selectedCrypto];
+  const email   = document.getElementById("buyer-email").value.trim();
+  const txid    = document.getElementById("buyer-txid").value.trim();
+  const network = wallets[selectedCoin] ? wallets[selectedCoin].network : selectedCoin;
 
-  let amount = PRODUCT.price;
-  if (selectedCrypto === "BNB" && bnbPrice) {
-    amount = parseFloat((PRODUCT.price / bnbPrice).toFixed(4));
-  }
+  const rate      = coinPrices[selectedCoin] || 1;
+  const cryptoAmt = selectedCoin === "USDT" || selectedCoin === "USDC"
+    ? currentProduct.price.toFixed(2)
+    : (currentProduct.price / rate).toFixed(6).replace(/\.?0+$/, "");
 
-  // Lock UI immediately to prevent double-submit
   submitLocked = true;
-  const btn     = document.getElementById("submit-btn");
-  const btnText = document.getElementById("btn-text");
-  if (btn)     btn.disabled = true;
-  if (btnText) btnText.textContent = "Submitting…";
+  const btn  = document.getElementById("submit-btn");
+  const text = document.getElementById("btn-text");
+  if (btn)  btn.disabled = true;
+  if (text) text.textContent = "Submitting…";
 
-  // Hide any previous error box
   const errBox = document.getElementById("submit-error");
   if (errBox) errBox.style.display = "none";
 
   const payload = {
     authToken: AUTH_TOKEN,
     type:      "purchase",
-    product:   PRODUCT.id,
-    name:      PRODUCT.name,
-    price:     PRODUCT.price,
-    currency:  selectedCrypto,
-    amount:    amount,
-    network:   cfg.network,
+    product:   currentProduct.id,
+    name:      currentProduct.name,
+    price:     currentProduct.price,
+    currency:  selectedCoin,
+    amount:    cryptoAmt,
+    network:   network,
+    wallet:    currentAddress,
     email:     email,
     txid:      txid,
-    wallet:    WALLET.address,
     timestamp: new Date().toISOString()
   };
 
-  // 15-second timeout
   const controller = new AbortController();
   const timeout    = setTimeout(function () { controller.abort(); }, 15000);
 
-  fetch(APPS_SCRIPT_URL, {
+  fetch(GAS_URL, {
     method:  "POST",
     signal:  controller.signal,
-    // text/plain avoids CORS preflight that blocks Apps Script Web Apps
     headers: { "Content-Type": "text/plain" },
     body:    JSON.stringify(payload)
   })
   .then(function (res) {
     clearTimeout(timeout);
-    if (!res.ok) throw new Error("Server returned HTTP " + res.status);
+    if (!res.ok) throw new Error("HTTP " + res.status);
     return res.json();
   })
   .then(function (data) {
     if (data && data.success === false) {
-      throw new Error(data.message || data.error || "Server rejected the request.");
+      throw new Error(data.error || data.message || "Server rejected request");
     }
-    showSuccess();
+    // Redirect to success page with product name in URL
+    window.location.href = "success.html?product=" + encodeURIComponent(currentProduct.name);
   })
   .catch(function (err) {
     clearTimeout(timeout);
     console.error("submitPayment:", err.message);
 
-    let userMsg;
-    if (err.name === "AbortError") {
-      userMsg = "Request timed out — please check your connection and try again.";
-    } else if (!navigator.onLine) {
-      userMsg = "You appear to be offline — please reconnect and try again.";
-    } else {
-      userMsg =
-        "We couldn't confirm receipt right now. " +
-        "If you already sent the payment, please email your TXID to " +
-        "creator.tools@atomicmail.io and we'll process it manually.";
-    }
-
-    showSubmitError(userMsg);
-
-    // Unlock so user can retry
     submitLocked = false;
-    if (btn)     btn.disabled = false;
-    if (btnText) btnText.textContent = "Try Again";
+    if (btn)  btn.disabled = false;
+    if (text) text.textContent = "Try Again";
+
+    const msg = err.name === "AbortError"
+      ? "Request timed out — please check your connection and try again."
+      : !navigator.onLine
+        ? "You appear to be offline — reconnect and try again."
+        : "Could not confirm submission. If you sent payment, email your TXID to creator.tools@atomicmail.io and we will process it manually.";
+
+    if (errBox) { errBox.textContent = "⚠️ " + msg; errBox.style.display = "block"; }
+    showToast("Submission issue — see message below.", "error");
   });
-}
-
-// ============================================================
-// SUCCESS STATE
-// ============================================================
-function showSuccess() {
-  // Stop timer
-  if (timerInterval) { clearInterval(timerInterval); timerInterval = null; }
-
-  // Advance step indicators
-  const step2 = document.getElementById("step2");
-  const step3 = document.getElementById("step3");
-  if (step2) {
-    step2.classList.remove("active");
-    step2.classList.add("done");
-    const dot = step2.querySelector(".dot");
-    if (dot) dot.textContent = "✓";
-  }
-  if (step3) step3.classList.add("active");
-
-  // Swap panels
-  const formEl    = document.getElementById("payment-form");
-  const successEl = document.getElementById("success-state");
-  if (formEl)    formEl.style.display    = "none";
-  if (successEl) successEl.style.display = "block";
-
-  showToast("Payment submitted — we'll be in touch within 1 hour.", "success");
-}
-
-// ============================================================
-// SUBMIT ERROR
-// ============================================================
-function showSubmitError(message) {
-  const errBox = document.getElementById("submit-error");
-  if (!errBox) return;
-  errBox.textContent   = "⚠️ " + message;
-  errBox.style.display = "block";
-  showToast("Submission issue — see message below.", "error");
 }
 
 // ============================================================
@@ -1182,11 +1187,9 @@ function showSubmitError(message) {
 function showToast(message, type) {
   const toast = document.getElementById("toast");
   if (!toast) return;
-
-  toast.textContent = message;
-  toast.className   = "toast toast-" + type;
+  toast.textContent   = message;
+  toast.className     = "toast toast-" + type;
   toast.style.display = "block";
-
   if (toast._t) clearTimeout(toast._t);
   toast._t = setTimeout(function () { toast.style.display = "none"; }, 4000);
 }
