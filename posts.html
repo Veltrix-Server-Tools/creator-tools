@@ -3,181 +3,527 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Posts — Veltrix Creator Tools</title>
+  <title>Blog — Veltrix Creator Tools</title>
   <link rel="stylesheet" href="assets/style.css"/>
+  <style>
+    .posts-hero {
+      background: linear-gradient(160deg, #0a0a1a 0%, #0d2137 100%);
+      color: white;
+      padding: 64px 24px 56px;
+      text-align: center;
+    }
+
+    .posts-hero h1 { font-size: 36px; font-weight: 900; margin-bottom: 10px; }
+    .posts-hero p  { font-size: 16px; opacity: 0.7; margin-bottom: 24px; }
+
+    /* Newsletter inline */
+    .hero-nl {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      max-width: 480px;
+      margin: 0 auto;
+    }
+
+    .hero-nl input {
+      flex: 1;
+      min-width: 200px;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+
+    .hero-nl button {
+      padding: 11px 22px;
+      background: #4285F4;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    #nl-done {
+      display: none;
+      color: #34a853;
+      font-weight: 700;
+      margin-top: 12px;
+      font-size: 14px;
+    }
+
+    /* Category tabs */
+    .cat-tabs {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 28px;
+    }
+
+    .cat-tab {
+      padding: 8px 20px;
+      border: 1.5px solid #e8eaed;
+      border-radius: 20px;
+      background: white;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .cat-tab.active,
+    .cat-tab:hover {
+      background: #4285F4;
+      color: white;
+      border-color: #4285F4;
+    }
+
+    /* Post grid */
+    .post-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 22px;
+      margin-bottom: 40px;
+    }
+
+    .post-card {
+      background: white;
+      border: 1.5px solid #e8eaed;
+      border-radius: 12px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+    }
+
+    .post-card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 8px 28px rgba(0,0,0,0.09);
+    }
+
+    .post-meta {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .post-tag {
+      display: inline-block;
+      padding: 3px 12px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.4px;
+    }
+
+    .tag-tutorial { background: #e8f0fe; color: #4285F4; }
+    .tag-tip      { background: #e6f4ea; color: #34a853; }
+    .tag-update   { background: #fce8e6; color: #ea4335; }
+    .tag-guide    { background: #fff8e1; color: #f09000; }
+
+    .post-date { font-size: 12px; color: #aaa; }
+
+    .post-card h2 {
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.35;
+      color: #1a1a2e;
+    }
+
+    .post-card p {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+      flex: 1;
+    }
+
+    .post-read {
+      font-size: 13px;
+      font-weight: 700;
+      color: #4285F4;
+      text-decoration: none;
+      margin-top: auto;
+    }
+
+    .post-read:hover { text-decoration: underline; }
+
+    /* Featured post */
+    .post-card.featured-post {
+      grid-column: 1 / -1;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+      border-color: #4285F4;
+      padding: 32px;
+    }
+
+    .fp-left {}
+    .fp-right {
+      background: linear-gradient(135deg, #1a1a2e, #0f3460);
+      border-radius: 10px;
+      padding: 24px;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .fp-right h4 {
+      font-size: 13px;
+      font-weight: 700;
+      opacity: 0.5;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .fp-stat {
+      font-size: 28px;
+      font-weight: 900;
+      color: #4285F4;
+    }
+
+    .fp-stat-label { font-size: 12px; opacity: 0.5; margin-top: -8px; }
+
+    /* Inline upsell card */
+    .inline-upsell {
+      background: linear-gradient(135deg, #1a1a2e, #0f3460);
+      border-radius: 12px;
+      padding: 28px;
+      color: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 20px;
+      flex-wrap: wrap;
+      margin: 8px 0;
+    }
+
+    .iu-left h4 { font-size: 17px; margin-bottom: 5px; }
+    .iu-left p  { font-size: 13px; opacity: 0.65; }
+
+    .iu-btn {
+      background: #4285F4;
+      color: white;
+      padding: 11px 22px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      text-decoration: none;
+      white-space: nowrap;
+      transition: opacity 0.2s;
+    }
+
+    .iu-btn:hover { opacity: 0.85; }
+
+    @media (max-width: 700px) {
+      .post-card.featured-post {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 <body>
 
+<!-- Nav -->
 <nav class="nav">
   <div class="nav-inner">
     <a class="nav-logo" href="index.html">⚡ Veltrix</a>
     <div class="nav-links">
       <a href="index.html">Store</a>
-      <a href="posts.html">Posts</a>
+      <a href="posts.html">Blog</a>
       <a href="index.html#freebies">Free Tools</a>
     </div>
+    <a class="btn btn-blue"
+       href="payment.html"
+       style="padding:9px 20px;font-size:14px;">
+      Buy Now →
+    </a>
   </div>
 </nav>
 
-<!-- HERO -->
-<section class="hero hero-small">
-  <div class="hero-inner">
-    <h1>Posts</h1>
-    <p>Tutorials, tips, and updates for creators automating their workflow.</p>
+<!-- Hero -->
+<section class="posts-hero">
+  <h1>Creator Tools Blog</h1>
+  <p>
+    Tutorials, tips, and updates for creators automating
+    their sponsorship workflow.
+  </p>
+  <div class="hero-nl">
+    <input type="email"
+           id="nl-email"
+           placeholder="your@email.com"/>
+    <button onclick="subscribeNl()">Get Updates →</button>
   </div>
+  <div id="nl-done">✅ You're subscribed!</div>
 </section>
 
-<!-- POSTS -->
+<!-- Posts -->
 <section class="section">
   <div class="container">
 
-    <!-- Filter Bar -->
-    <div class="filter-bar">
-      <button class="filter-btn active" onclick="filterPosts('all', this)">All</button>
-      <button class="filter-btn" onclick="filterPosts('tutorial', this)">Tutorials</button>
-      <button class="filter-btn" onclick="filterPosts('update', this)">Updates</button>
-      <button class="filter-btn" onclick="filterPosts('tip', this)">Tips</button>
+    <!-- Category Tabs -->
+    <div class="cat-tabs">
+      <button class="cat-tab active"
+              onclick="filterPosts('all',this)">All</button>
+      <button class="cat-tab"
+              onclick="filterPosts('tutorial',this)">Tutorials</button>
+      <button class="cat-tab"
+              onclick="filterPosts('tip',this)">Tips</button>
+      <button class="cat-tab"
+              onclick="filterPosts('update',this)">Updates</button>
+      <button class="cat-tab"
+              onclick="filterPosts('guide',this)">Guides</button>
     </div>
 
-    <!-- Post Grid -->
     <div class="post-grid" id="post-grid">
 
-      <article class="post-card" data-category="tutorial">
+      <!-- Featured Post -->
+      <article class="post-card featured-post" data-cat="tutorial">
+        <div class="fp-left">
+          <div class="post-meta">
+            <span class="post-tag tag-tutorial">Tutorial</span>
+            <span class="post-date">Jan 20, 2026</span>
+          </div>
+          <h2 style="font-size:24px;margin:12px 0;">
+            How to Set Up the Full Creator Bundle
+            in 20 Minutes
+          </h2>
+          <p>
+            A complete walkthrough of deploying both the Sponsorship
+            Report Bot and the Creator Sales Bot from scratch. Covers
+            the YouTube API setup, sheet configuration, trigger setup,
+            and your first automated report send.
+          </p>
+          <a class="post-read"
+             href="posts/setup-bundle.html">
+            Read the Full Guide →
+          </a>
+        </div>
+        <div class="fp-right">
+          <h4>By the numbers</h4>
+          <div>
+            <div class="fp-stat">20 min</div>
+            <div class="fp-stat-label">Average setup time</div>
+          </div>
+          <div>
+            <div class="fp-stat">5+ hrs</div>
+            <div class="fp-stat-label">Saved per month</div>
+          </div>
+          <div>
+            <div class="fp-stat">$0</div>
+            <div class="fp-stat-label">Monthly cost after purchase</div>
+          </div>
+        </div>
+      </article>
+
+      <!-- Post 2 -->
+      <article class="post-card" data-cat="tutorial">
         <div class="post-meta">
           <span class="post-tag tag-tutorial">Tutorial</span>
           <span class="post-date">Jan 15, 2026</span>
         </div>
-        <h2>How to Set Up the Sponsorship Report Bot in 20 Minutes</h2>
-        <p>A step-by-step walkthrough of deploying the bot, connecting the YouTube API,
-           and sending your first automated report to a brand partner.</p>
-        <a class="post-read-more" href="posts/setup-sponsorship-bot.html">Read More →</a>
+        <h2>Set Up the Sponsorship Report Bot in 20 Minutes</h2>
+        <p>
+          Step-by-step walkthrough of the Report Bot alone. YouTube API
+          setup, connecting your sheet, deploying the web app dashboard,
+          and sending your first automated PDF.
+        </p>
+        <a class="post-read"
+           href="posts/setup-report-bot.html">Read More →</a>
       </article>
 
-      <article class="post-card" data-category="tip">
+      <!-- Post 3 -->
+      <article class="post-card" data-cat="tip">
         <div class="post-meta">
           <span class="post-tag tag-tip">Tip</span>
-          <span class="post-date">Jan 10, 2026</span>
+          <span class="post-date">Jan 12, 2026</span>
         </div>
-        <h2>5 Stats Brands Actually Care About (And How to Present Them)</h2>
-        <p>Most creators send raw numbers. Here's what brand managers are actually
-           looking for and how to format it to close the deal.</p>
-        <a class="post-read-more" href="posts/brand-stats.html">Read More →</a>
+        <h2>5 Stats Brands Actually Care About</h2>
+        <p>
+          Most creators send raw view counts. Here's what brand
+          managers are actually looking for and how to present it
+          in a way that closes the deal.
+        </p>
+        <a class="post-read"
+           href="posts/brand-stats.html">Read More →</a>
       </article>
 
-      <article class="post-card" data-category="update">
+      <!-- Inline Upsell -->
+      <div class="inline-upsell" data-cat="all">
+        <div class="iu-left">
+          <h4>🤖 Stop Finding Sponsors Manually</h4>
+          <p>
+            The Creator Sales Bot sends your lead magnet to creators
+            automatically and follows up with your upsell 3 days later.
+          </p>
+        </div>
+        <a class="iu-btn"
+           href="payment.html?product=sales-bot">
+          Get the Sales Bot — $65 →
+        </a>
+      </div>
+
+      <!-- Post 4 -->
+      <article class="post-card" data-cat="update">
         <div class="post-meta">
           <span class="post-tag tag-update">Update</span>
-          <span class="post-date">Jan 5, 2026</span>
+          <span class="post-date">Jan 8, 2026</span>
         </div>
-        <h2>Creator Sales Bot v2 — What's New</h2>
-        <p>Full error handling, daily send limits, auto-logging, and a
-           hardened email validator. Here's everything that changed.</p>
-        <a class="post-read-more" href="posts/sales-bot-v2.html">Read More →</a>
+        <h2>Creator Sales Bot v2 — Full Changelog</h2>
+        <p>
+          Full error handling, daily send limits, pause and resume
+          controls, live CRM dashboard, and a hardened email validator.
+          Everything that changed in v2.
+        </p>
+        <a class="post-read"
+           href="posts/sales-bot-v2.html">Read More →</a>
       </article>
 
-      <article class="post-card" data-category="tutorial">
+      <!-- Post 5 -->
+      <article class="post-card" data-cat="tip">
         <div class="post-meta">
-          <span class="post-tag tag-tutorial">Tutorial</span>
+          <span class="post-tag tag-tip">Tip</span>
+          <span class="post-date">Jan 5, 2026</span>
+        </div>
+        <h2>Why Creators Lose Brand Deals After the First One</h2>
+        <p>
+          The biggest mistake creators make with sponsors is inconsistent
+          reporting. Here's why it costs you the renewal and exactly
+          how to fix it.
+        </p>
+        <a class="post-read"
+           href="posts/brand-deals.html">Read More →</a>
+      </article>
+
+      <!-- Post 6 -->
+      <article class="post-card" data-cat="guide">
+        <div class="post-meta">
+          <span class="post-tag tag-guide">Guide</span>
           <span class="post-date">Dec 28, 2025</span>
         </div>
         <h2>Automating Brand Outreach with Google Apps Script</h2>
-        <p>How to build a lightweight CRM inside Google Sheets that sends
-           emails automatically without paying for any third-party tools.</p>
-        <a class="post-read-more" href="posts/outreach-automation.html">Read More →</a>
+        <p>
+          How to build a lightweight CRM inside Google Sheets that
+          sends emails automatically. No third-party tools, no monthly
+          fees, no code experience required.
+        </p>
+        <a class="post-read"
+           href="posts/outreach-automation.html">Read More →</a>
       </article>
 
-      <article class="post-card" data-category="tip">
+      <!-- Post 7 -->
+      <article class="post-card" data-cat="tip">
         <div class="post-meta">
           <span class="post-tag tag-tip">Tip</span>
           <span class="post-date">Dec 20, 2025</span>
         </div>
-        <h2>Why Creators Lose Brand Deals (And the Email That Fixes It)</h2>
-        <p>The single biggest mistake creators make when following up with
-           sponsors — and the exact template that turns it around.</p>
-        <a class="post-read-more" href="posts/brand-deals.html">Read More →</a>
+        <h2>What to Charge Brands: The Creator Rate Formula</h2>
+        <p>
+          Most creators undercharge by 40%. Here's the exact formula
+          we use in our free Rate Calculator to price your sponsorships
+          based on views, niche, and engagement.
+        </p>
+        <a class="post-read"
+           href="posts/rate-formula.html">Read More →</a>
       </article>
 
-      <article class="post-card" data-category="update">
+      <!-- Post 8 -->
+      <article class="post-card" data-cat="update">
         <div class="post-meta">
           <span class="post-tag tag-update">Update</span>
           <span class="post-date">Dec 15, 2025</span>
         </div>
-        <h2>Veltrix Store Launch</h2>
-        <p>We're live. Here's what we're building, who it's for, and
-           what's coming in the next 90 days.</p>
-        <a class="post-read-more" href="posts/launch.html">Read More →</a>
+        <h2>Veltrix Store Launch — What We're Building</h2>
+        <p>
+          We're live. Here's what Veltrix is, who it's for, what
+          the first two products do, and what's coming in the
+          next 90 days.
+        </p>
+        <a class="post-read"
+           href="posts/launch.html">Read More →</a>
       </article>
 
+      <!-- Bottom Upsell -->
+      <div class="inline-upsell" data-cat="all">
+        <div class="iu-left">
+          <h4>📦 Get Both Tools for $130</h4>
+          <p>
+            Bundle saves you $25 vs buying separately.
+            Includes priority support and all future tools free.
+          </p>
+        </div>
+        <a class="iu-btn"
+           href="payment.html?product=bundle">
+          Get the Bundle →
+        </a>
+      </div>
+
     </div>
   </div>
 </section>
 
-<!-- NEWSLETTER -->
-<section class="section section-grey">
-  <div class="container narrow">
-    <div class="section-head">
-      <h2>Get Updates</h2>
-      <p>New tools, tutorials, and tips. No spam. Unsubscribe anytime.</p>
-    </div>
-    <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
-      <input type="text"  id="nl-name"  placeholder="First name" required />
-      <input type="email" id="nl-email" placeholder="Email address" required />
-      <button type="submit" class="btn btn-blue">Subscribe →</button>
-    </form>
-    <div id="nl-confirm" style="display:none; text-align:center; color:#34a853; margin-top:16px;">
-      ✅ You're subscribed! Watch your inbox.
-    </div>
-  </div>
-</section>
-
+<!-- Footer -->
 <footer class="footer">
   <div class="footer-inner">
     <span>⚡ Veltrix Creator Tools · 2026</span>
     <div class="footer-links">
       <a href="index.html">Store</a>
-      <a href="posts.html">Posts</a>
+      <a href="posts.html">Blog</a>
+      <a href="index.html#freebies">Free Tools</a>
+      <a href="payment.html">Buy Now</a>
     </div>
   </div>
 </footer>
 
-<script>
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbyl2OBgs-0bG9edqQlZa-YJfOuMlyCvQ5QWLOjH3PWYM_2aMIIX73zU2wADUHwzzVhI1w/exec";
+<div class="toast" id="toast"></div>
 
-// Filter posts by category
-function filterPosts(category, btn) {
-  document.querySelectorAll(".filter-btn").forEach(function (b) {
+<script>
+var APPS_SCRIPT_URL =
+  "https://script.google.com/macros/s/YOUR_DEPLOYMENT_ID/exec";
+
+function filterPosts(cat, btn) {
+  document.querySelectorAll(".cat-tab").forEach(function (b) {
     b.classList.remove("active");
   });
   btn.classList.add("active");
 
-  document.querySelectorAll(".post-card").forEach(function (card) {
-    if (category === "all" || card.dataset.category === category) {
-      card.style.display = "block";
-    } else {
-      card.style.display = "none";
-    }
+  document.querySelectorAll("#post-grid > *").forEach(function (el) {
+    var elCat = el.dataset.cat || "all";
+    el.style.display =
+      cat === "all" || elCat === cat || elCat === "all"
+        ? ""
+        : "none";
   });
 }
 
-// Newsletter subscribe
-function subscribeNewsletter(event) {
-  event.preventDefault();
-  const name  = document.getElementById("nl-name").value.trim();
-  const email = document.getElementById("nl-email").value.trim();
-
+function subscribeNl() {
+  var email = document.getElementById("nl-email").value.trim();
+  var re    = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  if (!email || !re.test(email)) {
+    alert("Please enter a valid email.");
+    return;
+  }
   fetch(APPS_SCRIPT_URL, {
     method:  "POST",
     headers: { "Content-Type": "application/json" },
-    body:    JSON.stringify({ type: "newsletter", name: name, email: email })
-  })
-  .then(function () {
-    document.getElementById("nl-confirm").style.display = "block";
-    document.querySelector(".newsletter-form").style.display = "none";
-  })
-  .catch(function () {
-    document.getElementById("nl-confirm").style.display = "block";
-    document.querySelector(".newsletter-form").style.display = "none";
+    body: JSON.stringify({ type: "newsletter", email: email })
+  }).finally(function () {
+    document.getElementById("nl-done").style.display = "block";
+    document.querySelector(".hero-nl").style.display = "none";
   });
+}
+
+function showToast(msg, type) {
+  var t = document.getElementById("toast");
+  t.textContent   = msg;
+  t.className     = "toast toast-" + type;
+  t.style.display = "block";
+  setTimeout(function () { t.style.display = "none"; }, 4000);
 }
 </script>
 </body>
