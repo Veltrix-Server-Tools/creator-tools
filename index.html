@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="x-auth-token" content="{{ AUTH_TOKEN }}"/>
   <title>Veltrix Creator Tools — Automate Your Sponsorship Workflow</title>
   <meta name="description"
         content="Google Apps Script tools that pull your YouTube stats, generate PDF reports and email sponsors automatically. One-time payment. No subscription."/>
@@ -12,12 +13,9 @@
         content="Stop doing sponsor reports manually. Let the bot handle it."/>
   <meta property="og:url"
         content="https://veltrix-server-tools.github.io/creator-tools/"/>
- <meta name="x-auth-token" content="{{ AUTH_TOKEN }}">
   <link rel="stylesheet" href="assets/style.css"/>
   <style>
-    /* ── Page-specific overrides ── */
-
-    /* Announcement bar */
+    /* ── Announcement bar ── */
     .announce-bar {
       background: linear-gradient(90deg, #1a1a2e, #0f3460);
       color: white;
@@ -29,14 +27,9 @@
     }
 
     .announce-bar span { color: #fbbc04; }
+    .announce-bar a    { color: #7ab3ff; text-decoration: underline; margin-left: 8px; }
 
-    .announce-bar a {
-      color: #7ab3ff;
-      text-decoration: underline;
-      margin-left: 8px;
-    }
-
-    /* Social proof bar */
+    /* ── Proof bar ── */
     .proof-bar {
       background: #f8f9fa;
       border-bottom: 1px solid #e8eaed;
@@ -57,9 +50,7 @@
       font-weight: 500;
     }
 
-    .proof-item .pi-icon { font-size: 16px; }
-
-    /* Hero */
+    /* ── Hero ── */
     .hero {
       background: linear-gradient(160deg, #0a0a1a 0%, #0d2137 55%, #1a1a2e 100%);
       color: white;
@@ -101,8 +92,9 @@
       margin-bottom: 28px;
     }
 
-    .hero-eyebrow .dot {
-      width: 7px; height: 7px;
+    .hero-eyebrow .pulse-dot {
+      width: 7px;
+      height: 7px;
       border-radius: 50%;
       background: #34a853;
       animation: pulse 2s infinite;
@@ -140,7 +132,7 @@
       margin-bottom: 38px;
     }
 
-    .hero-proof span { color: #fbbc04; }
+    .hero-proof span { color: #fbbc04; opacity: 1; }
 
     .hero-cta {
       display: flex;
@@ -150,7 +142,7 @@
       margin-bottom: 52px;
     }
 
-    /* Floating mockup */
+    /* ── Mockup ── */
     .hero-mockup {
       background: rgba(255,255,255,0.04);
       border: 1px solid rgba(255,255,255,0.1);
@@ -184,10 +176,13 @@
     }
 
     .mb-dot {
-      width: 6px; height: 6px;
+      width: 6px;
+      height: 6px;
       border-radius: 50%;
       background: #34a853;
       animation: pulse 2s infinite;
+      display: inline-block;
+      flex-shrink: 0;
     }
 
     .mockup-cards {
@@ -215,7 +210,8 @@
     }
 
     .mockup-row span { font-size: 11px; color: rgba(255,255,255,0.55); }
-    .mockup-row .bb  {
+
+    .bb {
       display: inline-block;
       background: rgba(66,133,244,0.3);
       color: #7ab3ff;
@@ -225,7 +221,7 @@
       font-weight: 700;
     }
 
-    .mockup-row .gb {
+    .gb {
       display: inline-block;
       background: rgba(52,168,83,0.25);
       color: #81c784;
@@ -235,7 +231,7 @@
       font-weight: 700;
     }
 
-    /* ── Pain Section ── */
+    /* ── Pain section ── */
     .pain-section {
       background: #fafafa;
       border-top: 1px solid #f0f0f0;
@@ -254,7 +250,7 @@
       line-height: 1.25;
     }
 
-    .pain-section p {
+    .pain-section .pain-intro {
       font-size: 16px;
       color: #666;
       line-height: 1.7;
@@ -277,7 +273,55 @@
 
     .pain-card .pc-icon { font-size: 24px; margin-bottom: 10px; }
     .pain-card h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; color: #1a1a2e; }
-    .pain-card p  { font-size: 13px; color: #888; line-height: 1.55; }
+    .pain-card p  { font-size: 13px; color: #888; line-height: 1.55; margin: 0; }
+
+    /* ── How it works ── */
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 20px;
+    }
+
+    .how-step { text-align: center; position: relative; }
+
+    .how-step::after {
+      content: '→';
+      position: absolute;
+      right: -14px;
+      top: 22px;
+      font-size: 20px;
+      color: #ddd;
+    }
+
+    .how-step:last-child::after { display: none; }
+
+    .how-num {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: #4285F4;
+      color: white;
+      font-size: 18px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 14px;
+    }
+
+    .how-step h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+    .how-step p  { font-size: 13px; color: #666; line-height: 1.5; margin: 0; }
+
+    /* ── Urgency bar ── */
+    .urgency-bar {
+      background: linear-gradient(90deg, #ea4335, #c62828);
+      color: white;
+      text-align: center;
+      padding: 14px 24px;
+    }
+
+    .urgency-bar p { font-size: 14px; font-weight: 600; margin: 0; }
+    .urgency-bar span { color: #ffcdd2; }
 
     /* ── Products ── */
     .product-grid {
@@ -324,13 +368,13 @@
     .product-badge.gold { background: #fbbc04; color: #1a1a2e; }
 
     .product-icon { font-size: 38px; }
-
-    .product-card h3 { font-size: 20px; font-weight: 800; color: #1a1a2e; }
-
-    .product-desc { font-size: 14px; color: #666; line-height: 1.6; }
+    .product-card h3 { font-size: 20px; font-weight: 800; color: #1a1a2e; margin: 0; }
+    .product-desc { font-size: 14px; color: #666; line-height: 1.6; margin: 0; }
 
     .product-features {
       list-style: none;
+      padding: 0;
+      margin: 0;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -352,13 +396,7 @@
     }
 
     .price     { font-size: 38px; font-weight: 900; color: #4285F4; }
-    .price-old {
-      font-size: 18px;
-      color: #aaa;
-      text-decoration: line-through;
-      font-weight: 400;
-    }
-
+    .price-old { font-size: 18px; color: #aaa; text-decoration: line-through; font-weight: 400; }
     .price-note { font-size: 13px; color: #888; }
 
     .scarcity-note {
@@ -369,6 +407,63 @@
       align-items: center;
       gap: 6px;
     }
+
+    /* ── Live counter ── */
+    .live-counter {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(52,168,83,0.12);
+      border: 1px solid rgba(52,168,83,0.3);
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 13px;
+      color: #34a853;
+      font-weight: 600;
+      margin-top: 12px;
+    }
+
+    /* ── Comparison table ── */
+    .compare-table {
+      width: 100%;
+      border-collapse: collapse;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
+    }
+
+    .compare-table th {
+      padding: 16px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      border-bottom: 2px solid #f0f0f0;
+      background: #f8f9fa;
+    }
+
+    .compare-table th:first-child { text-align: left; }
+    .compare-table th.col-paid   { background: #4285F4; color: white; }
+    .compare-table th.col-bundle { background: #1a1a2e; color: white; }
+
+    .compare-table td {
+      padding: 13px 20px;
+      font-size: 13px;
+      border-bottom: 1px solid #f5f5f5;
+      text-align: center;
+      background: white;
+    }
+
+    .compare-table td:first-child {
+      text-align: left;
+      font-weight: 500;
+      color: #333;
+    }
+
+    .compare-table tr:hover td { background: #fafcff; }
+
+    .check-y { color: #34a853; font-size: 16px; font-weight: 800; }
+    .check-n { color: #ccc;    font-size: 16px; }
+    .check-p { color: #4285F4; font-size: 13px; font-weight: 700; }
 
     /* ── Freebies ── */
     .freebie-grid {
@@ -392,8 +487,8 @@
     .freebie-card:hover { transform: translateY(-3px); }
 
     .freebie-icon { font-size: 32px; }
-    .freebie-card h3 { font-size: 17px; font-weight: 700; color: #1a1a2e; }
-    .freebie-card p  { font-size: 13px; color: #666; line-height: 1.55; }
+    .freebie-card h3 { font-size: 17px; font-weight: 700; color: #1a1a2e; margin: 0; }
+    .freebie-card > p { font-size: 13px; color: #666; line-height: 1.55; margin: 0; }
 
     .free-badge-pill {
       display: inline-block;
@@ -403,6 +498,7 @@
       font-weight: 800;
       padding: 3px 12px;
       border-radius: 20px;
+      align-self: flex-start;
     }
 
     .freebie-form {
@@ -419,10 +515,30 @@
       font-size: 14px;
       outline: none;
       width: 100%;
+      box-sizing: border-box;
       transition: border-color 0.2s;
+      font-family: inherit;
     }
 
     .freebie-form input:focus { border-color: #34a853; }
+    .freebie-form input.input-error { border-color: #ea4335; }
+
+    .freebie-field-error {
+      font-size: 12px;
+      color: #ea4335;
+      display: none;
+      margin-top: -4px;
+    }
+
+    .freebie-error-box {
+      display: none;
+      color: #ea4335;
+      background: #fce8e6;
+      border-radius: 8px;
+      padding: 10px 14px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
 
     .freebie-confirm {
       display: none;
@@ -434,110 +550,6 @@
       background: #e6f4ea;
       border-radius: 8px;
     }
-
-    /* ── Urgency / FOMO bar ── */
-    .urgency-bar {
-      background: linear-gradient(90deg, #ea4335, #c62828);
-      color: white;
-      text-align: center;
-      padding: 14px 24px;
-    }
-
-    .urgency-bar p {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .urgency-bar span { color: #ffcdd2; }
-
-    /* ── How it works ── */
-    .how-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 20px;
-    }
-
-    .how-step {
-      text-align: center;
-      position: relative;
-    }
-
-    .how-step::after {
-      content: '→';
-      position: absolute;
-      right: -14px;
-      top: 22px;
-      font-size: 20px;
-      color: #ddd;
-    }
-
-    .how-step:last-child::after { display: none; }
-
-    .how-num {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      background: #4285F4;
-      color: white;
-      font-size: 18px;
-      font-weight: 800;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      margin: 0 auto 14px;
-    }
-
-    .how-step h4 { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
-    .how-step p  { font-size: 13px; color: #666; line-height: 1.5; }
-
-    /* ── Comparison table ── */
-    .compare-table {
-      width: 100%;
-      border-collapse: collapse;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 2px 16px rgba(0,0,0,0.08);
-    }
-
-    .compare-table th {
-      padding: 16px 20px;
-      font-size: 14px;
-      font-weight: 700;
-      text-align: center;
-      border-bottom: 2px solid #f0f0f0;
-    }
-
-    .compare-table th:first-child { text-align: left; }
-
-    .compare-table th.col-paid {
-      background: #4285F4;
-      color: white;
-    }
-
-    .compare-table th.col-bundle {
-      background: #1a1a2e;
-      color: white;
-    }
-
-    .compare-table td {
-      padding: 13px 20px;
-      font-size: 13px;
-      border-bottom: 1px solid #f5f5f5;
-      text-align: center;
-      background: white;
-    }
-
-    .compare-table td:first-child {
-      text-align: left;
-      font-weight: 500;
-      color: #333;
-    }
-
-    .compare-table tr:hover td { background: #fafcff; }
-
-    .check-y { color: #34a853; font-size: 16px; font-weight: 800; }
-    .check-n { color: #ccc;    font-size: 16px; }
-    .check-p { color: #4285F4; font-size: 13px; font-weight: 700; }
 
     /* ── Testimonials ── */
     .testimonial-grid {
@@ -557,12 +569,14 @@
     .testimonial::before {
       content: '"';
       position: absolute;
-      top: -4px; left: 18px;
+      top: -4px;
+      left: 18px;
       font-size: 56px;
       color: #4285F4;
       opacity: 0.15;
       font-family: Georgia, serif;
       line-height: 1;
+      pointer-events: none;
     }
 
     .testimonial .stars { color: #fbbc04; font-size: 13px; margin-bottom: 8px; }
@@ -576,11 +590,7 @@
       padding-top: 6px;
     }
 
-    .testimonial .t-name {
-      font-size: 12px;
-      color: #888;
-      font-weight: 700;
-    }
+    .testimonial .t-name   { font-size: 12px; color: #888; font-weight: 700; }
 
     .testimonial .t-result {
       display: inline-block;
@@ -607,9 +617,8 @@
     }
 
     .guarantee-icon { font-size: 56px; flex-shrink: 0; }
-
     .guarantee-block h3 { font-size: 22px; font-weight: 800; margin-bottom: 8px; }
-    .guarantee-block p  { font-size: 14px; color: #666; line-height: 1.6; }
+    .guarantee-block p  { font-size: 14px; color: #666; line-height: 1.6; margin: 0; }
 
     /* ── FAQ ── */
     .faq-list {
@@ -628,6 +637,10 @@
     }
 
     .faq-q {
+      width: 100%;
+      background: none;
+      border: none;
+      text-align: left;
       padding: 16px 20px;
       font-size: 15px;
       font-weight: 700;
@@ -635,7 +648,8 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      user-select: none;
+      font-family: inherit;
+      color: #1a1a2e;
     }
 
     .faq-q:hover { background: #fafafa; }
@@ -644,6 +658,8 @@
       font-size: 12px;
       color: #aaa;
       transition: transform 0.2s;
+      flex-shrink: 0;
+      margin-left: 12px;
     }
 
     .faq-a {
@@ -704,48 +720,72 @@
       align-items: center;
       gap: 6px;
       font-size: 12px;
-      opacity: 0.45;
+      opacity: 0.55;
     }
 
-    /* ── Live counter ── */
-    .live-counter {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      background: rgba(52,168,83,0.15);
-      border: 1px solid rgba(52,168,83,0.3);
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      color: #34a853;
+    /* ── Toast ── */
+    .toast {
+      position: fixed;
+      bottom: 24px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-size: 14px;
       font-weight: 600;
-      margin-bottom: 16px;
+      z-index: 9999;
+      display: none;
+      white-space: nowrap;
+      pointer-events: none;
     }
 
-    /* Responsive */
+    .toast-success { background: #34a853; color: #fff; }
+    .toast-error   { background: #ea4335; color: #fff; }
+
+    /* ── sr-only ── */
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    /* ── Responsive ── */
     @media (max-width: 900px) {
-      .product-grid   { grid-template-columns: 1fr; }
-      .how-grid       { grid-template-columns: repeat(2, 1fr); }
-      .how-step::after { display: none; }
-      .pain-grid      { grid-template-columns: 1fr; }
-      .freebie-grid   { grid-template-columns: 1fr; }
+      .product-grid     { grid-template-columns: 1fr; }
+      .how-grid         { grid-template-columns: repeat(2,1fr); }
+      .how-step::after  { display: none; }
+      .pain-grid        { grid-template-columns: 1fr; }
+      .freebie-grid     { grid-template-columns: 1fr; }
       .testimonial-grid { grid-template-columns: 1fr; }
-      .hero h1        { font-size: 36px; }
-      .guarantee-block { flex-direction: column; text-align: center; }
+      .hero h1          { font-size: 36px; }
+      .guarantee-block  { flex-direction: column; text-align: center; padding: 28px 24px; }
+      .mockup-cards     { grid-template-columns: repeat(2,1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .proof-bar     { gap: 16px; }
+      .final-cta h2  { font-size: 28px; }
+      .compare-table { font-size: 12px; }
+      .compare-table th,
+      .compare-table td { padding: 10px 12px; }
     }
   </style>
 </head>
 <body>
 
 <!-- ── Announcement Bar ── -->
-<div class="announce-bar">
+<div class="announce-bar" role="note">
   🎉 <span>New:</span> Full Creator Bundle — both tools for
   <span>$130</span> (save $25).
   <a href="#products">See the bundle →</a>
 </div>
 
 <!-- ── Nav ── -->
-<nav class="nav">
+<nav class="nav" aria-label="Main navigation">
   <div class="nav-inner">
     <a class="nav-logo" href="index.html">⚡ Veltrix</a>
     <div class="nav-links">
@@ -755,47 +795,31 @@
       <a href="#faq">FAQ</a>
     </div>
     <a class="btn btn-blue"
-       href="payment.html"
+       href="payment.html?product=sponsorship-bot"
        style="padding:9px 20px;font-size:14px;">
       Buy Now →
     </a>
   </div>
 </nav>
 
-<!-- ── Social Proof Bar ── -->
-<div class="proof-bar">
-  <div class="proof-item">
-    <span class="pi-icon">⭐</span>
-    <span>4.9/5 from 200+ creators</span>
-  </div>
-  <div class="proof-item">
-    <span class="pi-icon">🔒</span>
-    <span>Secure crypto payment</span>
-  </div>
-  <div class="proof-item">
-    <span class="pi-icon">📦</span>
-    <span>Delivered within 1 hour</span>
-  </div>
-  <div class="proof-item">
-    <span class="pi-icon">🛡️</span>
-    <span>7-day guarantee</span>
-  </div>
-  <div class="proof-item">
-    <span class="pi-icon">⚡</span>
-    <span>No subscription ever</span>
-  </div>
+<!-- ── Proof Bar ── -->
+<div class="proof-bar" aria-label="Trust signals">
+  <div class="proof-item"><span aria-hidden="true">⭐</span><span>4.9/5 from 200+ creators</span></div>
+  <div class="proof-item"><span aria-hidden="true">🔒</span><span>Secure crypto payment</span></div>
+  <div class="proof-item"><span aria-hidden="true">📦</span><span>Delivered within 1 hour</span></div>
+  <div class="proof-item"><span aria-hidden="true">🛡️</span><span>7-day guarantee</span></div>
+  <div class="proof-item"><span aria-hidden="true">⚡</span><span>No subscription ever</span></div>
 </div>
 
 <!-- ── HERO ── -->
-<section class="hero">
+<section class="hero" aria-labelledby="hero-heading">
   <div class="hero-inner">
-
-    <div class="hero-eyebrow">
-      <span class="dot"></span>
+    <div class="hero-eyebrow" aria-hidden="true">
+      <span class="pulse-dot"></span>
       Built for YouTube creators · 2026
     </div>
 
-    <h1>
+    <h1 id="hero-heading">
       Your Sponsors Get<br/>
       a <span class="blue">PDF Report</span><br/>
       <span class="gold">Every Morning.</span><br/>
@@ -815,40 +839,21 @@
     </p>
 
     <div class="hero-cta">
-      <a class="btn btn-white" href="#products">
-        See All Tools
-      </a>
-      <a class="btn btn-outline" href="#freebies">
-        Get Free Template →
-      </a>
+      <a class="btn btn-white" href="#products">See All Tools</a>
+      <a class="btn btn-outline" href="#freebies">Get Free Template →</a>
     </div>
 
     <!-- Dashboard Mockup -->
-    <div class="hero-mockup">
+    <div class="hero-mockup" aria-hidden="true">
       <div class="mockup-bar">
         <span class="mb-title">📊 Sponsor Reports Dashboard</span>
-        <span class="mb-live">
-          <span class="mb-dot"></span>
-          Running · Next run 9:00am
-        </span>
+        <span class="mb-live"><span class="mb-dot"></span>Running · Next run 9:00am</span>
       </div>
       <div class="mockup-cards">
-        <div class="mc">
-          <div class="mc-val">12</div>
-          <div class="mc-label">Videos Tracked</div>
-        </div>
-        <div class="mc">
-          <div class="mc-val">1.4M</div>
-          <div class="mc-label">Total Views</div>
-        </div>
-        <div class="mc">
-          <div class="mc-val">84K</div>
-          <div class="mc-label">Total Likes</div>
-        </div>
-        <div class="mc">
-          <div class="mc-val">$4,800</div>
-          <div class="mc-label">Deal Value</div>
-        </div>
+        <div class="mc"><div class="mc-val">12</div><div class="mc-label">Videos Tracked</div></div>
+        <div class="mc"><div class="mc-val">1.4M</div><div class="mc-label">Total Views</div></div>
+        <div class="mc"><div class="mc-val">84K</div><div class="mc-label">Total Likes</div></div>
+        <div class="mc"><div class="mc-val">$4,800</div><div class="mc-label">Deal Value</div></div>
       </div>
       <div class="mockup-row">
         <span>My Brand Deal Video</span>
@@ -869,35 +874,36 @@
         <span>AppCo</span>
       </div>
     </div>
-
   </div>
 </section>
 
 <!-- ── PAIN SECTION ── -->
-<section class="pain-section">
+<section class="pain-section" aria-labelledby="pain-heading">
   <div class="pain-inner">
-    <h2>Every week you're doing this manually.<br/>
-        That's the problem.</h2>
-    <p>
+    <h2 id="pain-heading">
+      Every week you're doing this manually.<br/>
+      That's the problem.
+    </h2>
+    <p class="pain-intro">
       The average creator with 3+ active sponsorships spends
       over 5 hours a month on reporting alone.
       That's time you're not spending on content.
     </p>
     <div class="pain-grid">
       <div class="pain-card">
-        <div class="pc-icon">😩</div>
+        <div class="pc-icon" aria-hidden="true">😩</div>
         <h4>Opening sheets every Monday</h4>
         <p>Manually checking each video, copying stats,
            formatting numbers into an email.</p>
       </div>
       <div class="pain-card">
-        <div class="pc-icon">📧</div>
+        <div class="pc-icon" aria-hidden="true">📧</div>
         <h4>Writing the same email every week</h4>
         <p>Copy. Paste. Change the numbers. Send.
            Repeat for every single sponsor you have.</p>
       </div>
       <div class="pain-card">
-        <div class="pc-icon">😰</div>
+        <div class="pc-icon" aria-hidden="true">😰</div>
         <h4>Forgetting to follow up</h4>
         <p>Missing a reporting cycle makes you look
            unprofessional and risks your renewal deal.</p>
@@ -907,30 +913,30 @@
 </section>
 
 <!-- ── HOW IT WORKS ── -->
-<section class="section" id="how">
+<section class="section" id="how" aria-labelledby="how-heading">
   <div class="container">
     <div class="section-head">
-      <h2>Set It Up Once. Runs Forever.</h2>
+      <h2 id="how-heading">Set It Up Once. Runs Forever.</h2>
       <p>20 minutes of setup. Then you never think about it again.</p>
     </div>
     <div class="how-grid">
       <div class="how-step">
-        <div class="how-num">1</div>
+        <div class="how-num" aria-hidden="true">1</div>
         <h4>Paste Your URLs</h4>
         <p>Add your YouTube video URLs to Column A of your Google Sheet.</p>
       </div>
       <div class="how-step">
-        <div class="how-num">2</div>
+        <div class="how-num" aria-hidden="true">2</div>
         <h4>Bot Fetches Stats</h4>
         <p>The script pulls live views and likes from the YouTube API daily.</p>
       </div>
       <div class="how-step">
-        <div class="how-num">3</div>
+        <div class="how-num" aria-hidden="true">3</div>
         <h4>PDF Generated</h4>
         <p>A branded PDF report is built automatically from your live data.</p>
       </div>
       <div class="how-step">
-        <div class="how-num">4</div>
+        <div class="how-num" aria-hidden="true">4</div>
         <h4>Sponsor Emailed</h4>
         <p>The PDF lands in your sponsor's inbox every morning. No clicks needed.</p>
       </div>
@@ -939,41 +945,39 @@
 </section>
 
 <!-- ── URGENCY BAR ── -->
-<div class="urgency-bar">
+<div class="urgency-bar" role="status" aria-live="polite">
   <p>
     🔥 <strong>47 creators</strong> bought this week ·
     <span>Prices increase when we hit 1,000 customers</span> ·
-    Currently at <strong>847</strong>
+    Currently at <strong id="buyer-count">847</strong>
   </p>
 </div>
 
 <!-- ── PRODUCTS ── -->
-<section class="section section-grey" id="products">
+<section class="section section-grey" id="products" aria-labelledby="products-heading">
   <div class="container">
     <div class="section-head">
-      <h2>Choose Your Tool</h2>
-      <p>
-        One-time payment. Instant delivery after verification.
-        No subscriptions. No monthly fees. Ever.
-      </p>
-      <div class="live-counter">
-        <span class="mb-dot" style="background:#34a853;"></span>
-        <span id="live-count">23</span> people viewing this page right now
+      <h2 id="products-heading">Choose Your Tool</h2>
+      <p>One-time payment. Instant delivery after verification.<br/>
+         No subscriptions. No monthly fees. Ever.</p>
+      <div class="live-counter" aria-live="polite">
+        <span class="mb-dot" aria-hidden="true"></span>
+        <span id="live-count">23</span> people viewing this page
       </div>
     </div>
 
     <div class="product-grid">
 
-      <!-- Product 1: Report Bot -->
+      <!-- Report Bot -->
       <div class="product-card featured">
-        <div class="product-badge">⭐ Most Popular</div>
-        <div class="product-icon">📊</div>
+        <div class="product-badge" aria-label="Most popular">⭐ Most Popular</div>
+        <div class="product-icon" aria-hidden="true">📊</div>
         <h3>Sponsorship Report Bot</h3>
         <p class="product-desc">
           Pulls your YouTube stats, generates a branded PDF, and emails
           your sponsor automatically every morning. Set up once. Done forever.
         </p>
-        <ul class="product-features">
+        <ul class="product-features" aria-label="Features">
           <li>✅ YouTube API — unlimited videos</li>
           <li>✅ Auto PDF generation daily</li>
           <li>✅ Emails sponsor automatically</li>
@@ -986,24 +990,22 @@
           <span class="price">$90</span>
           <span class="price-note">one-time</span>
         </div>
-        <div class="scarcity-note">
-          🔥 12 sold in the last 48 hours
-        </div>
+        <div class="scarcity-note" aria-live="polite">🔥 12 sold in the last 48 hours</div>
         <a class="btn btn-blue full-width"
-           href="payment.html?product=report-bot">
+           href="payment.html?product=sponsorship-bot">
           Buy Now — Pay with Crypto
         </a>
       </div>
 
-      <!-- Product 2: Sales Bot -->
+      <!-- Sales Bot -->
       <div class="product-card">
-        <div class="product-icon">🤖</div>
+        <div class="product-icon" aria-hidden="true">🤖</div>
         <h3>Creator Sales Bot</h3>
         <p class="product-desc">
           Automated 2-step email funnel that finds creators, sends your
           free lead magnet, and follows up with your upsell — all on autopilot.
         </p>
-        <ul class="product-features">
+        <ul class="product-features" aria-label="Features">
           <li>✅ Google Sheets CRM built in</li>
           <li>✅ Auto lead magnet delivery</li>
           <li>✅ 3-day upsell sequence</li>
@@ -1016,26 +1018,23 @@
           <span class="price">$65</span>
           <span class="price-note">one-time</span>
         </div>
-        <div class="scarcity-note">
-          🔥 8 sold in the last 48 hours
-        </div>
+        <div class="scarcity-note" aria-live="polite">🔥 8 sold in the last 48 hours</div>
         <a class="btn btn-blue full-width"
            href="payment.html?product=sales-bot">
           Buy Now — Pay with Crypto
         </a>
       </div>
 
-      <!-- Product 3: Bundle -->
+      <!-- Bundle -->
       <div class="product-card featured">
-        <div class="product-badge gold">🎁 Best Value — Save $25</div>
-        <div class="product-icon">📦</div>
+        <div class="product-badge gold" aria-label="Best value">🎁 Best Value — Save $25</div>
+        <div class="product-icon" aria-hidden="true">📦</div>
         <h3>Full Creator Bundle</h3>
         <p class="product-desc">
           Both tools together. Report Bot + Sales Bot at a discounted
-          bundle price. Find sponsors with the Sales Bot, then report
-          to them automatically with the Report Bot.
+          bundle price. Find sponsors and report to them — fully automated.
         </p>
-        <ul class="product-features">
+        <ul class="product-features" aria-label="Features">
           <li>✅ Everything in both tools</li>
           <li>✅ Combined single script file</li>
           <li>✅ One dashboard for both bots</li>
@@ -1049,9 +1048,7 @@
           <span class="price-old">$155</span>
           <span class="price-note">save $25</span>
         </div>
-        <div class="scarcity-note">
-          🔥 Most purchased this week
-        </div>
+        <div class="scarcity-note" aria-live="polite">🔥 Most purchased this week</div>
         <a class="btn btn-blue full-width"
            href="payment.html?product=bundle">
           Get the Bundle — Pay with Crypto
@@ -1063,199 +1060,213 @@
 </section>
 
 <!-- ── COMPARISON TABLE ── -->
-<section class="section" id="compare">
+<section class="section" id="compare" aria-labelledby="compare-heading">
   <div class="container">
     <div class="section-head">
-      <h2>What Do You Actually Get?</h2>
+      <h2 id="compare-heading">What Do You Actually Get?</h2>
       <p>Full feature breakdown across all three products.</p>
     </div>
-    <table class="compare-table">
-      <thead>
-        <tr>
-          <th>Feature</th>
-          <th>Free Template</th>
-          <th class="col-paid">Report Bot $90</th>
-          <th>Sales Bot $65</th>
-          <th class="col-bundle">Bundle $130</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>YouTube stat fetching</td>
-          <td><span class="check-p">5 videos</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td>Unlimited videos</td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td>Auto PDF generation</td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td>Auto email to sponsor</td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td>Daily automation trigger</td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td>Email outreach funnel</td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td>CRM lead management</td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td>Live web dashboard</td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td>Full source code</td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-y">✓</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td>Priority support</td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td>Future tools free</td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-n">—</span></td>
-          <td><span class="check-y">✓</span></td>
-        </tr>
-        <tr>
-          <td style="font-weight:800;">Price</td>
-          <td style="font-weight:700;color:#34a853;">Free</td>
-          <td style="font-weight:800;color:#4285F4;font-size:16px;">$90</td>
-          <td style="font-weight:800;color:#4285F4;">$65</td>
-          <td style="font-weight:800;color:white;background:#1a1a2e;font-size:16px;">$130</td>
-        </tr>
-      </tbody>
-    </table>
+    <div style="overflow-x:auto;">
+      <table class="compare-table">
+        <thead>
+          <tr>
+            <th scope="col">Feature</th>
+            <th scope="col">Free Template</th>
+            <th scope="col" class="col-paid">Report Bot $90</th>
+            <th scope="col">Sales Bot $65</th>
+            <th scope="col" class="col-bundle">Bundle $130</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>YouTube stat fetching</td>
+            <td><span class="check-p">5 videos</span></td>
+            <td><span class="check-y" aria-label="Included">✓</span></td>
+            <td><span class="check-n" aria-label="Not included">—</span></td>
+            <td><span class="check-y" aria-label="Included">✓</span></td>
+          </tr>
+          <tr>
+            <td>Unlimited videos</td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+          </tr>
+          <tr>
+            <td>Auto PDF generation</td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+          </tr>
+          <tr>
+            <td>Auto email to sponsor</td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+          </tr>
+          <tr>
+            <td>Daily automation trigger</td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-y">✓</span></td>
+          </tr>
+          <tr>
+            <td>Email outreach funnel</td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-y">✓</span></td>
+          </tr>
+          <tr>
+            <td>CRM lead management</td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-y">✓</span></td>
+          </tr>
+          <tr>
+            <td>Live web dashboard</td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-y">✓</span></td>
+          </tr>
+          <tr>
+            <td>Full source code</td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-y">✓</span></td>
+            <td><span class="check-y">✓</span></td>
+          </tr>
+          <tr>
+            <td>Priority support</td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+          </tr>
+          <tr>
+            <td>Future tools free</td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-n">—</span></td>
+            <td><span class="check-y">✓</span></td>
+          </tr>
+          <tr>
+            <td style="font-weight:800;">Price</td>
+            <td style="font-weight:700;color:#34a853;">Free</td>
+            <td style="font-weight:800;color:#4285F4;font-size:16px;">$90</td>
+            <td style="font-weight:800;color:#4285F4;">$65</td>
+            <td style="font-weight:800;color:white;background:#1a1a2e;font-size:16px;">$130</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 </section>
 
 <!-- ── FREEBIES ── -->
-<section class="section section-grey" id="freebies">
+<section class="section section-grey" id="freebies" aria-labelledby="freebies-heading">
   <div class="container">
     <div class="section-head">
-      <h2>Try It Free First</h2>
-      <p>
-        Three free tools. No email required for the template download.
-        Enter your email and we send it instantly.
-      </p>
+      <h2 id="freebies-heading">Try It Free First</h2>
+      <p>Enter your email and we send it instantly.</p>
     </div>
 
     <div class="freebie-grid">
 
-      <!-- Freebie 1 -->
+      <!-- Freebie 1 — template -->
       <div class="freebie-card">
-        <div class="freebie-icon">📊</div>
+        <div class="freebie-icon" aria-hidden="true">📊</div>
         <span class="free-badge-pill">FREE</span>
         <h3>Sponsorship Report Template</h3>
-        <p>
-          The Google Sheets tracker with YouTube API integration.
-          Manual version — up to 5 videos. See exactly how the
-          full bot works before you buy.
-        </p>
-        <form class="freebie-form"
+        <p>The Google Sheets tracker with YouTube API integration.
+           Manual version — up to 5 videos.</p>
+        <form class="freebie-form" id="form-template" novalidate
               onsubmit="claimFreebie(event,'template')">
-          <input type="text"  name="name"
-                 placeholder="First name" required/>
-          <input type="email" name="email"
-                 placeholder="Email address" required/>
-          <button type="submit"
-                  class="btn btn-green full-width">
+          <div>
+            <label for="name-template" class="sr-only">First name</label>
+            <input type="text" id="name-template" name="name"
+                   placeholder="First name" autocomplete="given-name" required/>
+            <span class="freebie-field-error" id="name-error-template"></span>
+          </div>
+          <div>
+            <label for="email-template" class="sr-only">Email address</label>
+            <input type="email" id="email-template" name="email"
+                   placeholder="Email address" autocomplete="email" required/>
+            <span class="freebie-field-error" id="email-error-template"></span>
+          </div>
+          <div class="freebie-error-box" id="submit-error-template"></div>
+          <button type="submit" class="btn btn-green full-width">
             Send Me the Free Template →
           </button>
         </form>
-        <div class="freebie-confirm" id="confirm-template">
+        <div class="freebie-confirm" id="confirm-template" role="status">
           ✅ Check your inbox! Sent instantly.
         </div>
       </div>
 
-      <!-- Freebie 2 -->
+      <!-- Freebie 2 — scripts -->
       <div class="freebie-card">
-        <div class="freebie-icon">📋</div>
+        <div class="freebie-icon" aria-hidden="true">📋</div>
         <span class="free-badge-pill">FREE</span>
         <h3>Creator Outreach Script Pack</h3>
-        <p>
-          5 plug-and-play email templates for reaching out to brands.
-          The exact scripts our users use to land their first
-          sponsorship deals. Copy, paste, send.
-        </p>
-        <form class="freebie-form"
+        <p>5 plug-and-play email templates for reaching out to brands.
+           Copy, paste, send.</p>
+        <form class="freebie-form" id="form-scripts" novalidate
               onsubmit="claimFreebie(event,'scripts')">
-          <input type="text"  name="name"
-                 placeholder="First name" required/>
-          <input type="email" name="email"
-                 placeholder="Email address" required/>
-          <button type="submit"
-                  class="btn btn-green full-width">
+          <div>
+            <label for="name-scripts" class="sr-only">First name</label>
+            <input type="text" id="name-scripts" name="name"
+                   placeholder="First name" autocomplete="given-name" required/>
+            <span class="freebie-field-error" id="name-error-scripts"></span>
+          </div>
+          <div>
+            <label for="email-scripts" class="sr-only">Email address</label>
+            <input type="email" id="email-scripts" name="email"
+                   placeholder="Email address" autocomplete="email" required/>
+            <span class="freebie-field-error" id="email-error-scripts"></span>
+          </div>
+          <div class="freebie-error-box" id="submit-error-scripts"></div>
+          <button type="submit" class="btn btn-green full-width">
             Send Me the Scripts →
           </button>
         </form>
-        <div class="freebie-confirm" id="confirm-scripts">
+        <div class="freebie-confirm" id="confirm-scripts" role="status">
           ✅ Check your inbox! Sent instantly.
         </div>
       </div>
 
-      <!-- Freebie 3 -->
+      <!-- Freebie 3 — calculator -->
       <div class="freebie-card">
-        <div class="freebie-icon">📈</div>
+        <div class="freebie-icon" aria-hidden="true">📈</div>
         <span class="free-badge-pill">FREE</span>
         <h3>Sponsorship Rate Calculator</h3>
-        <p>
-          A simple Google Sheet that tells you exactly what to charge
-          brands based on your views, niche, and engagement rate.
-          Stop undercharging.
-        </p>
-        <form class="freebie-form"
+        <p>Tells you exactly what to charge brands based on your views,
+           niche, and engagement rate. Stop undercharging.</p>
+        <form class="freebie-form" id="form-calculator" novalidate
               onsubmit="claimFreebie(event,'calculator')">
-          <input type="text"  name="name"
-                 placeholder="First name" required/>
-          <input type="email" name="email"
-                 placeholder="Email address" required/>
-          <button type="submit"
-                  class="btn btn-green full-width">
+          <div>
+            <label for="name-calculator" class="sr-only">First name</label>
+            <input type="text" id="name-calculator" name="name"
+                   placeholder="First name" autocomplete="given-name" required/>
+            <span class="freebie-field-error" id="name-error-calculator"></span>
+          </div>
+          <div>
+            <label for="email-calculator" class="sr-only">Email address</label>
+            <input type="email" id="email-calculator" name="email"
+                   placeholder="Email address" autocomplete="email" required/>
+            <span class="freebie-field-error" id="email-error-calculator"></span>
+          </div>
+          <div class="freebie-error-box" id="submit-error-calculator"></div>
+          <button type="submit" class="btn btn-green full-width">
             Send Me the Calculator →
           </button>
         </form>
-        <div class="freebie-confirm" id="confirm-calculator">
+        <div class="freebie-confirm" id="confirm-calculator" role="status">
           ✅ Check your inbox! Sent instantly.
         </div>
       </div>
@@ -1265,16 +1276,16 @@
 </section>
 
 <!-- ── TESTIMONIALS ── -->
-<section class="section" id="proof">
+<section class="section" id="proof" aria-labelledby="proof-heading">
   <div class="container">
     <div class="section-head">
-      <h2>Creators Who Upgraded</h2>
+      <h2 id="proof-heading">Creators Who Upgraded</h2>
       <p>Real results from real creators who started on the free template.</p>
     </div>
     <div class="testimonial-grid">
 
       <div class="testimonial">
-        <div class="stars">★★★★★</div>
+        <div class="stars" aria-label="5 stars">★★★★★</div>
         <p>"Set it up on Sunday. By Monday morning my sponsor had already
            received the report automatically. I didn't do a single thing."</p>
         <div class="t-name">Marcus T. · Tech Channel · 180k subscribers</div>
@@ -1282,7 +1293,7 @@
       </div>
 
       <div class="testimonial">
-        <div class="stars">★★★★★</div>
+        <div class="stars" aria-label="5 stars">★★★★★</div>
         <p>"My brand manager said my reports look more professional than
            what she gets from creators with 5x my audience. Closed a
            $2,000 deal the week I set this up."</p>
@@ -1291,16 +1302,16 @@
       </div>
 
       <div class="testimonial">
-        <div class="stars">★★★★★</div>
+        <div class="stars" aria-label="5 stars">★★★★★</div>
         <p>"I was skeptical about paying $90 for a Google script. But
            the Sales Bot found me three new sponsor leads in the first
-           week. Worth every cent and then some."</p>
+           week. Worth every cent."</p>
         <div class="t-name">James R. · Gaming · 210k subscribers</div>
         <span class="t-result">🤝 3 new sponsor leads week 1</span>
       </div>
 
       <div class="testimonial">
-        <div class="stars">★★★★★</div>
+        <div class="stars" aria-label="5 stars">★★★★★</div>
         <p>"I bought the bundle. Best $130 I've spent on my channel.
            The report bot handles my sponsors, the sales bot finds me
            new ones. It's a complete system."</p>
@@ -1309,19 +1320,18 @@
       </div>
 
       <div class="testimonial">
-        <div class="stars">★★★★★</div>
+        <div class="stars" aria-label="5 stars">★★★★★</div>
         <p>"Used the free template for a week. Upgraded immediately.
            The PDF my sponsors receive looks like it came from a
-           proper media company. Game changer."</p>
+           proper media company."</p>
         <div class="t-name">Leo M. · Travel · 145k subscribers</div>
         <span class="t-result">📄 Upgraded after 1 week</span>
       </div>
 
       <div class="testimonial">
-        <div class="stars">★★★★★</div>
+        <div class="stars" aria-label="5 stars">★★★★★</div>
         <p>"Setup took 18 minutes. Now every Monday morning all four
-           of my sponsors get an updated report automatically. I
-           haven't thought about reporting since."</p>
+           of my sponsors get an updated report automatically."</p>
         <div class="t-name">Sarah W. · Food · 89k subscribers</div>
         <span class="t-result">⚡ 4 sponsors automated</span>
       </div>
@@ -1331,19 +1341,19 @@
 </section>
 
 <!-- ── GUARANTEE ── -->
-<section class="section section-grey">
+<section class="section section-grey" aria-labelledby="guarantee-heading">
   <div class="container">
     <div class="guarantee-block">
-      <div class="guarantee-icon">🛡️</div>
+      <div class="guarantee-icon" aria-hidden="true">🛡️</div>
       <div>
-        <h3>7-Day Satisfaction Guarantee</h3>
+        <h3 id="guarantee-heading">7-Day Satisfaction Guarantee</h3>
         <p>
           If the script doesn't work in your Google account after following
           the setup guide, email us within 7 days and we'll either fix it
-          for you personally or give you a full refund. No questions asked.
-          We stand behind every tool we ship.
-          <br/><br/>
-          <strong>support@veltrix.dev</strong>
+          personally or give you a full refund. No questions asked.<br/><br/>
+          <a href="mailto:creator.tools@atomicmail.io">
+            <strong>creator.tools@atomicmail.io</strong>
+          </a>
         </p>
       </div>
     </div>
@@ -1351,18 +1361,18 @@
 </section>
 
 <!-- ── FAQ ── -->
-<section class="section" id="faq">
+<section class="section" id="faq" aria-labelledby="faq-heading">
   <div class="container">
     <div class="section-head">
-      <h2>Questions Answered</h2>
+      <h2 id="faq-heading">Questions Answered</h2>
     </div>
     <div class="faq-list">
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
           Do I need coding experience to use these?
-          <span class="faq-arrow">▼</span>
-        </div>
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
         <div class="faq-a">
           No. Everything is copy-paste. The setup guide walks you through
           every step. If you can use Google Sheets you can run these tools.
@@ -1371,68 +1381,63 @@
       </div>
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
           What does "one-time payment" actually mean?
-          <span class="faq-arrow">▼</span>
-        </div>
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
         <div class="faq-a">
-          You pay once and own the tool forever. No monthly fees, no
-          subscription, no renewal. You also get all future updates
-          for free on the bundle. The Report Bot and Sales Bot include
-          lifetime updates too.
+          You pay once and own the tool forever. No monthly fees,
+          no subscription, no renewal. You get all future updates free on the bundle.
         </div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
           How does the payment work?
-          <span class="faq-arrow">▼</span>
-        </div>
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
         <div class="faq-a">
-          We accept USDT, USDC, and BNB on the BNB Smart Chain (BEP-20).
-          After sending payment you submit your transaction ID and email
-          on the checkout page. We verify the transaction and deliver
-          your files within 1 hour.
+          We accept multiple cryptocurrencies. After sending payment you submit
+          your transaction ID and email on the checkout page. We verify the
+          transaction and deliver your files within 1 hour.
         </div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
           Will this get my Google account banned?
-          <span class="faq-arrow">▼</span>
-        </div>
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
         <div class="faq-a">
           No. These tools run entirely inside Google Apps Script using
-          your own Google account's quota. The Sales Bot has a hard
-          50-email daily limit built in. The Report Bot sends one email
-          per sponsor per day. Both are well within Google's limits.
+          your own account's quota. The Sales Bot has a hard 50-email
+          daily limit built in. Both are well within Google's limits.
         </div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
           What's the difference between the free template and the paid bot?
-          <span class="faq-arrow">▼</span>
-        </div>
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
         <div class="faq-a">
           The free template is manual — you fetch stats yourself and send
-          a text email manually. Limited to 5 videos. The paid bot runs
+          a text email manually, limited to 5 videos. The paid bot runs
           automatically every morning, generates a real PDF, and emails
           it to your sponsor without you touching anything. Unlimited videos.
         </div>
       </div>
 
       <div class="faq-item">
-        <div class="faq-q" onclick="toggleFaq(this)">
+        <button class="faq-q" onclick="toggleFaq(this)" aria-expanded="false">
           Should I buy the bundle or individual tools?
-          <span class="faq-arrow">▼</span>
-        </div>
+          <span class="faq-arrow" aria-hidden="true">▼</span>
+        </button>
         <div class="faq-a">
           If you want both tools the bundle saves you $25 and includes
           priority support and all future tools free. If you only need
-          one specific tool buy that individually. Most creators who
-          buy the Report Bot end up coming back for the Sales Bot anyway —
-          the bundle works out cheaper.
+          one specific tool buy individually. Most creators who buy the
+          Report Bot come back for the Sales Bot anyway.
         </div>
       </div>
 
@@ -1441,9 +1446,9 @@
 </section>
 
 <!-- ── FINAL CTA ── -->
-<section class="final-cta">
+<section class="final-cta" aria-labelledby="final-cta-heading">
   <div class="final-cta-inner">
-    <h2>
+    <h2 id="final-cta-heading">
       Stop Reporting Manually.<br/>
       <span>Start Today.</span>
     </h2>
@@ -1453,511 +1458,186 @@
       One-time payment. Delivered within the hour.
     </p>
     <div class="final-cta-buttons">
-      <a class="btn btn-white"
-         href="payment.html?product=bundle">
-        🎁 Get the Bundle — $130
-      </a>
-      <a class="btn btn-outline"
-         href="payment.html?product=report-bot">
-        📊 Report Bot — $90
-      </a>
-      <a class="btn btn-outline"
-         href="payment.html?product=sales-bot">
-        🤖 Sales Bot — $65
-      </a>
+      <a class="btn btn-white"   href="payment.html?product=bundle">🎁 Get the Bundle — $130</a>
+      <a class="btn btn-outline" href="payment.html?product=sponsorship-bot">📊 Report Bot — $90</a>
+      <a class="btn btn-outline" href="payment.html?product=sales-bot">🤖 Sales Bot — $65</a>
     </div>
     <div class="final-trust">
-      <div class="ft-item">🔒 <span>Secure crypto payment</span></div>
-      <div class="ft-item">📦 <span>Delivered within 1 hour</span></div>
-      <div class="ft-item">🛡️ <span>7-day guarantee</span></div>
-      <div class="ft-item">⚡ <span>No subscription ever</span></div>
-      <div class="ft-item">💬 <span>support@veltrix.dev</span></div>
+      <div class="ft-item"><span aria-hidden="true">🔒</span><span>Secure crypto payment</span></div>
+      <div class="ft-item"><span aria-hidden="true">📦</span><span>Delivered within 1 hour</span></div>
+      <div class="ft-item"><span aria-hidden="true">🛡️</span><span>7-day guarantee</span></div>
+      <div class="ft-item"><span aria-hidden="true">⚡</span><span>No subscription ever</span></div>
+      <div class="ft-item">
+        <span aria-hidden="true">💬</span>
+        <a href="mailto:creator.tools@atomicmail.io"
+           style="color:inherit;">creator.tools@atomicmail.io</a>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ── FOOTER ── -->
-<footer class="footer">
+<footer class="footer" aria-label="Site footer">
   <div class="footer-inner">
     <span>⚡ Veltrix Creator Tools · 2026</span>
     <div class="footer-links">
       <a href="index.html">Store</a>
       <a href="posts.html">Blog</a>
       <a href="#freebies">Free Tools</a>
-      <a href="payment.html">Buy Now</a>
-      <a href="mailto:support@veltrix.dev">Support</a>
+      <a href="payment.html?product=sponsorship-bot">Buy Now</a>
+      <a href="mailto:creator.tools@atomicmail.io">Support</a>
     </div>
   </div>
 </footer>
 
-<div class="toast" id="toast"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
 // ============================================================
 // CONFIG
 // ============================================================
-const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwF7ERZamKSSs7AJoB6Pi63Xj4fG0Qkf8Yu9YNVNmVWG_Z9TqYAFF4O9TI6y6EDlifkfw/exec";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbwF7ERZamKSSs7AJoB6Pi63Xj4fG0Qkf8Yu9YNVNmVWG_Z9TqYAFF4O9TI6y6EDlifkfw/exec";
 
-// FIX #1 — auth token sent with every request (must match AUTH_TOKEN Script Property)
-// In production: load this from your build env or a meta tag, never commit the real value.
-
-// Then read it in JS instead of hardcoding
-const AUTH_TOKEN = document
-  .querySelector('meta[name="x-auth-token"]')
-  .getAttribute("content");
-const WALLET = {
-  address: "YOUR_WALLET_ADDRESS" // ← replace with your actual wallet address
-};
-
-const CRYPTO_CONFIG = {
-  USDT: { symbol: "USDT", rate: 1.00,  network: "BNB Smart Chain (BEP-20)", icon: "💵" },
-  USDC: { symbol: "USDC", rate: 1.00,  network: "BNB Smart Chain (BEP-20)", icon: "🔵" },
-  BNB:  { symbol: "BNB",  rate: null,  network: "BNB Smart Chain (BSC)",    icon: "🟡" }
-};
-
-const PRODUCT = {
-  id:    "sponsorship-bot",
-  name:  "Sponsorship Report Bot",
-  price: 90
-};
-
-// ============================================================
-// STATE
-// ============================================================
-let selectedCrypto = "USDT";
-let timerInterval  = null;
-let bnbPrice       = null;
-let submitLocked   = false; // FIX #2 — double-submit guard
-
-// ============================================================
-// INIT
-// ============================================================
-document.addEventListener("DOMContentLoaded", function () {
-  startTimer(30 * 60);
-  fetchBnbPrice();
-
-  // FIX #3 — wallet address was only passed to QR; now also written to the
-  // display element so copyAddress() always reads a real value
-  const addrEl = document.getElementById("wallet-address");
-  if (addrEl) addrEl.textContent = WALLET.address;
-
-  updateQR(WALLET.address);
-
-  // FIX #4 — inline oninput handlers in HTML are fragile; attach here instead
-  const emailInput = document.getElementById("buyer-email");
-  const txidInput  = document.getElementById("buyer-txid");
-  if (emailInput) {
-    emailInput.addEventListener("input", function () {
-      clearError("email-error", "buyer-email");
-    });
+const AUTH_TOKEN = (function () {
+  const meta = document.querySelector('meta[name="x-auth-token"]');
+  if (!meta) { console.error("AUTH_TOKEN meta tag missing"); return ""; }
+  const val = meta.getAttribute("content");
+  if (!val || val === "{{ AUTH_TOKEN }}") {
+    console.warn("AUTH_TOKEN not injected yet.");
+    return "";
   }
-  if (txidInput) {
-    txidInput.addEventListener("input", function () {
-      clearError("txid-error", "buyer-txid");
-    });
-  }
-});
+  return val;
+}());
 
 // ============================================================
-// CRYPTO SELECTOR
+// FREEBIE STATE — one lock per freebie key
 // ============================================================
-function selectCrypto(el, currency) {
-  // FIX #5 — guard against unknown currency keys
-  if (!CRYPTO_CONFIG[currency]) {
-    console.error("selectCrypto: unknown currency — " + currency);
-    return;
-  }
+const freebieState = {};
 
-  document.querySelectorAll(".crypto-option").forEach(function (opt) {
-    opt.classList.remove("selected");
+// ============================================================
+// CLAIM FREEBIE
+// ============================================================
+function claimFreebie(event, key) {
+  event.preventDefault();
+  if (freebieState[key]) return;
+
+  const form      = document.getElementById("form-"         + key);
+  const nameInput = document.getElementById("name-"         + key);
+  const emailInput= document.getElementById("email-"        + key);
+  const nameErr   = document.getElementById("name-error-"   + key);
+  const emailErr  = document.getElementById("email-error-"  + key);
+  const submitErr = document.getElementById("submit-error-" + key);
+  const confirm   = document.getElementById("confirm-"      + key);
+  const btn       = form ? form.querySelector("button[type=submit]") : null;
+
+  // Reset
+  [nameErr, emailErr, submitErr].forEach(function (el) {
+    if (el) { el.textContent = ""; el.style.display = "none"; }
   });
-  el.classList.add("selected");
-  selectedCrypto = currency;
-  updateAmountDisplay();
+  if (nameInput)  nameInput.classList.remove("input-error");
+  if (emailInput) emailInput.classList.remove("input-error");
 
-  const cfg        = CRYPTO_CONFIG[currency];
-  const networkEl  = document.getElementById("network-note");
-  if (networkEl) {
-    networkEl.textContent =
-      "⚠️ Send only on " + cfg.network + ". Wrong network = lost funds.";
-  }
-}
+  const name  = nameInput  ? nameInput.value.trim()  : "";
+  const email = emailInput ? emailInput.value.trim()  : "";
+  let valid = true;
 
-function updateAmountDisplay() {
-  const cfg  = CRYPTO_CONFIG[selectedCrypto];
-  let amount = PRODUCT.price;
-  let rateNote = "1 : 1";
-
-  if (selectedCrypto === "BNB") {
-    if (bnbPrice) {
-      amount   = (PRODUCT.price / bnbPrice).toFixed(4);
-      rateNote = "1 BNB ≈ $" + bnbPrice.toFixed(2);
-    } else {
-      // FIX #6 — don't silently show a wrong amount while price is loading
-      const amountEl = document.getElementById("display-amount");
-      if (amountEl) amountEl.textContent = "Loading BNB price…";
-      const rateEl = document.getElementById("rate-note");
-      if (rateEl) rateEl.textContent = "";
-      return;
-    }
-  }
-
-  const amountEl = document.getElementById("display-amount");
-  const rateEl   = document.getElementById("rate-note");
-  if (amountEl) amountEl.textContent = amount + " " + cfg.symbol;
-  if (rateEl)   rateEl.textContent   = rateNote;
-}
-
-// ============================================================
-// FETCH BNB PRICE
-// ============================================================
-function fetchBnbPrice() {
-  // FIX #7 — show a loading state while fetching
-  const amountEl = document.getElementById("display-amount");
-  if (selectedCrypto === "BNB" && amountEl) {
-    amountEl.textContent = "Fetching price…";
-  }
-
-  fetch("https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=usd")
-    .then(function (res) {
-      if (!res.ok) throw new Error("HTTP " + res.status);
-      return res.json();
-    })
-    .then(function (data) {
-      // FIX #8 — validate API response shape before reading deep property
-      if (
-        data &&
-        data.binancecoin &&
-        typeof data.binancecoin.usd === "number" &&
-        data.binancecoin.usd > 0
-      ) {
-        bnbPrice = data.binancecoin.usd;
-      } else {
-        throw new Error("Unexpected CoinGecko response shape");
-      }
-      updateAmountDisplay();
-    })
-    .catch(function (err) {
-      console.warn("BNB price fetch failed:", err.message);
-      // FIX #9 — fallback price is clearly labelled as an estimate in the UI
-      bnbPrice = 600;
-      updateAmountDisplay();
-      const rateEl = document.getElementById("rate-note");
-      if (rateEl) rateEl.textContent += " (estimated — live price unavailable)";
-    });
-}
-
-// ============================================================
-// QR CODE
-// ============================================================
-function updateQR(address) {
-  const img = document.getElementById("qr-img");
-  if (!img) return;
-
-  // FIX #10 — show a placeholder while QR loads; handle load error
-  img.alt = "Loading QR code…";
-  img.src = "https://api.qrserver.com/v1/create-qr-code/?size=140x140&data=" +
-            encodeURIComponent(address);
-
-  img.onload  = function () { img.alt = "Wallet QR code"; };
-  img.onerror = function () {
-    img.alt = "QR unavailable — copy the address below";
-    img.style.display = "none";
-  };
-}
-
-// ============================================================
-// COPY ADDRESS
-// ============================================================
-function copyAddress() {
-  const address = WALLET.address; // FIX #11 — read from source of truth, not DOM text
-
-  // FIX #12 — navigator.clipboard is only available in secure contexts (HTTPS)
-  // Fall back to the legacy execCommand for HTTP dev environments
-  if (navigator.clipboard && window.isSecureContext) {
-    navigator.clipboard.writeText(address)
-      .then(function () { showToast("Address copied!", "success"); })
-      .catch(function () { fallbackCopy(address); });
-  } else {
-    fallbackCopy(address);
-  }
-}
-
-function fallbackCopy(text) {
-  const ta = document.createElement("textarea");
-  ta.value = text;
-  ta.style.cssText = "position:fixed;opacity:0;pointer-events:none;";
-  document.body.appendChild(ta);
-  ta.select();
-  try {
-    document.execCommand("copy");
-    showToast("Address copied!", "success");
-  } catch (e) {
-    showToast("Copy failed — please copy manually.", "error");
-  }
-  document.body.removeChild(ta);
-}
-
-// ============================================================
-// COUNTDOWN TIMER
-// ============================================================
-function startTimer(seconds) {
-  let remaining = seconds;
-
-  // FIX #13 — clear any existing timer before starting a new one
-  if (timerInterval) clearInterval(timerInterval);
-
-  timerInterval = setInterval(function () {
-    remaining--;
-    const m = String(Math.floor(remaining / 60)).padStart(2, "0");
-    const s = String(remaining % 60).padStart(2, "0");
-
-    const timerEl = document.getElementById("timer");
-    if (!timerEl) return;
-
-    timerEl.textContent = m + ":" + s;
-
-    if (remaining <= 0) {
-      clearInterval(timerInterval);
-      timerInterval = null;
-      timerEl.textContent = "Expired";
-      timerEl.style.color = "#ea4335";
-
-      // FIX #14 — disable submit when timer expires; rate expired on backend anyway
-      lockForm("Session expired — please refresh the page to start a new order.");
-    }
-  }, 1000);
-}
-
-// ============================================================
-// FORM VALIDATION
-// ============================================================
-function validateForm() {
-  let valid      = true;
-  const email    = document.getElementById("buyer-email").value.trim();
-  const txid     = document.getElementById("buyer-txid").value.trim();
-  const emailRx  = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-  // Reset errors first
-  clearError("email-error", "buyer-email");
-  clearError("txid-error",  "buyer-txid");
-
-  if (!emailRx.test(email)) {
-    showFieldError("email-error", "buyer-email", "Please enter a valid email address.");
+  if (!name) {
+    if (nameErr)  { nameErr.textContent = "Please enter your first name."; nameErr.style.display = "block"; }
+    if (nameInput)  nameInput.classList.add("input-error");
     valid = false;
   }
 
-  // FIX #15 — basic TXID sanity: non-empty, no spaces, min length 10
-  if (!txid) {
-    showFieldError("txid-error", "buyer-txid", "Please enter your transaction ID.");
-    valid = false;
-  } else if (/\s/.test(txid)) {
-    showFieldError("txid-error", "buyer-txid", "Transaction ID should not contain spaces.");
-    valid = false;
-  } else if (txid.length < 10) {
-    showFieldError("txid-error", "buyer-txid", "Transaction ID looks too short.");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    if (emailErr) { emailErr.textContent = "Please enter a valid email."; emailErr.style.display = "block"; }
+    if (emailInput) emailInput.classList.add("input-error");
     valid = false;
   }
 
-  // FIX #16 — warn if BNB selected but price is estimated
-  if (selectedCrypto === "BNB" && !bnbPrice) {
-    showToast("BNB price unavailable — please select USDT or USDC.", "error");
-    valid = false;
-  }
+  if (!valid) return;
 
-  return valid;
-}
+  freebieState[key] = true;
+  if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
 
-function showFieldError(errorId, inputId, message) {
-  const errEl   = document.getElementById(errorId);
-  const inputEl = document.getElementById(inputId);
-  if (errEl) {
-    errEl.textContent   = message;
-    errEl.style.display = "block";
-  }
-  if (inputEl) inputEl.classList.add("error");
-}
-
-function clearError(errorId, inputId) {
-  const errEl   = document.getElementById(errorId);
-  const inputEl = document.getElementById(inputId);
-  if (errEl)   { errEl.style.display = "none"; errEl.textContent = ""; }
-  if (inputEl) inputEl.classList.remove("error");
-}
-
-function lockForm(message) {
-  submitLocked = true;
-  const btn = document.getElementById("submit-btn");
-  if (btn) {
-    btn.disabled = true;
-    const btnText = document.getElementById("btn-text");
-    if (btnText) btnText.textContent = message || "Unavailable";
-  }
-}
-
-// ============================================================
-// SUBMIT PAYMENT
-// ============================================================
-function submitPayment() {
-  // FIX #2 — prevent double-submit
-  if (submitLocked) return;
-  if (!validateForm()) return;
-
-  const email = document.getElementById("buyer-email").value.trim();
-  const txid  = document.getElementById("buyer-txid").value.trim();
-  const cfg   = CRYPTO_CONFIG[selectedCrypto];
-
-  let amount = PRODUCT.price;
-  if (selectedCrypto === "BNB" && bnbPrice) {
-    amount = parseFloat((PRODUCT.price / bnbPrice).toFixed(4));
-  }
-
-  // Lock UI
-  submitLocked = true;
-  const btn     = document.getElementById("submit-btn");
-  const btnText = document.getElementById("btn-text");
-  if (btn)     btn.disabled = true;
-  if (btnText) btnText.textContent = "Submitting…";
-
-  // FIX #1 — include auth token as body field (Apps Script reads it from JSON)
-  const payload = {
-    authToken: AUTH_TOKEN,         // ← auth fix
-    type:      "purchase",
-    product:   PRODUCT.id,
-    name:      PRODUCT.name,
-    price:     PRODUCT.price,
-    currency:  selectedCrypto,
-    amount:    amount,
-    network:   cfg.network,
-    email:     email,
-    txid:      txid,
-    wallet:    WALLET.address,
-    timestamp: new Date().toISOString()
-  };
-
-  // FIX #17 — use no-cors only as last resort; try real fetch first with timeout
   const controller = new AbortController();
-  const timeout    = setTimeout(function () { controller.abort(); }, 15000); // 15 s
+  const timeout    = setTimeout(function () { controller.abort(); }, 15000);
 
-  fetch(APPS_SCRIPT_URL, {
+  fetch(GAS_URL, {
     method:  "POST",
     signal:  controller.signal,
-    headers: { "Content-Type": "text/plain" }, // FIX #18 — GAS requires text/plain for JSON body to avoid preflight CORS block
-    body:    JSON.stringify(payload)
+    headers: { "Content-Type": "text/plain" },
+    body: JSON.stringify({
+      authToken: AUTH_TOKEN,
+      type:      "freebie",
+      freebie:   key,
+      name:      name,
+      email:     email
+    })
   })
   .then(function (res) {
     clearTimeout(timeout);
-    // FIX #19 — check HTTP status before parsing
-    if (!res.ok) throw new Error("Server returned " + res.status);
+    if (!res.ok) throw new Error("HTTP " + res.status);
     return res.json();
   })
   .then(function (data) {
-    if (data && data.success === false) {
-      // FIX #20 — surface server-side errors to the user instead of silently succeeding
-      throw new Error(data.message || data.error || "Server rejected the request");
-    }
-    showSuccess();
+    if (data && data.success === false) throw new Error(data.error || "Server error");
+    if (form)    form.style.display    = "none";
+    if (confirm) confirm.style.display = "block";
+    showToast("🎉 Sent — check your inbox!", "success");
   })
   .catch(function (err) {
     clearTimeout(timeout);
-    console.error("submitPayment error:", err.message);
-
-    // FIX #21 — don't fake success on network error; tell the user what happened
-    if (err.name === "AbortError") {
-      showSubmitError("Request timed out. Please check your connection and try again.");
-    } else if (!navigator.onLine) {
-      showSubmitError("You appear to be offline. Please reconnect and try again.");
-    } else {
-      // Genuine fallback: payment may have gone through but we can't confirm.
-      // Show a qualified message rather than full success or silent failure.
-      showSubmitError(
-        "We couldn't confirm receipt — but your payment details have been noted. " +
-        "Please email us your TXID if you don't hear back within 1 hour."
-      );
-    }
-
-    // Re-enable the button so the user can retry
-    submitLocked = false;
-    if (btn)     btn.disabled = false;
-    if (btnText) btnText.textContent = "Re-submit";
+    freebieState[key] = false;
+    if (btn) { btn.disabled = false; btn.textContent = "Try Again →"; }
+    const msg = err.name === "AbortError"
+      ? "Request timed out — please try again."
+      : "Something went wrong — please try again or email creator.tools@atomicmail.io";
+    if (submitErr) { submitErr.textContent = "⚠️ " + msg; submitErr.style.display = "block"; }
+    showToast("Could not send — see form for details.", "error");
   });
 }
 
 // ============================================================
-// SUCCESS / ERROR STATES
+// FAQ
 // ============================================================
-function showSuccess() {
-  if (timerInterval) {
-    clearInterval(timerInterval);
-    timerInterval = null;
+function toggleFaq(btn) {
+  const item   = btn.closest(".faq-item");
+  const isOpen = item.classList.contains("open");
+  document.querySelectorAll(".faq-item").forEach(function (i) {
+    i.classList.remove("open");
+    const q = i.querySelector(".faq-q");
+    if (q) q.setAttribute("aria-expanded", "false");
+  });
+  if (!isOpen) {
+    item.classList.add("open");
+    btn.setAttribute("aria-expanded", "true");
   }
-
-  // Update step indicators
-  const step2 = document.getElementById("step2");
-  const step3 = document.getElementById("step3");
-  if (step2) {
-    step2.classList.remove("active");
-    step2.classList.add("done");
-    const dot = step2.querySelector(".dot");
-    if (dot) dot.textContent = "✓";
-  }
-  if (step3) step3.classList.add("active");
-
-  // Swap panels
-  const formEl    = document.getElementById("payment-form");
-  const successEl = document.getElementById("success-state");
-  if (formEl)    formEl.style.display    = "none";
-  if (successEl) successEl.style.display = "block";
-
-  showToast("Payment submitted successfully!", "success");
 }
 
-function showSubmitError(message) {
-  // FIX #21 — dedicated error display instead of swallowing failures
-  let errBox = document.getElementById("submit-error");
-  if (!errBox) {
-    errBox = document.createElement("p");
-    errBox.id = "submit-error";
-    errBox.style.cssText =
-      "color:#ea4335;background:#fce8e6;border-radius:8px;" +
-      "padding:12px 16px;margin-top:16px;font-size:14px;";
-    const formEl = document.getElementById("payment-form");
-    if (formEl) formEl.appendChild(errBox);
-  }
-  errBox.textContent   = "⚠️ " + message;
-  errBox.style.display = "block";
-  showToast("Submission failed — see message below.", "error");
-}
+// ============================================================
+// LIVE COUNTER
+// ============================================================
+(function () {
+  let base = 23;
+  const el = document.getElementById("live-count");
+  if (!el) return;
+  setInterval(function () {
+    base = Math.max(8, Math.min(60, base + Math.floor(Math.random() * 5) - 2));
+    el.textContent = base;
+  }, 7000);
+}());
 
 // ============================================================
 // TOAST
 // ============================================================
 function showToast(message, type) {
-  // FIX #22 — create toast element if missing rather than silently doing nothing
-  let toast = document.getElementById("toast");
-  if (!toast) {
-    toast = document.createElement("div");
-    toast.id = "toast";
-    toast.style.cssText =
-      "position:fixed;bottom:24px;left:50%;transform:translateX(-50%);" +
-      "padding:12px 24px;border-radius:8px;font-size:14px;font-weight:600;" +
-      "z-index:9999;display:none;";
-    document.body.appendChild(toast);
-  }
-
-  toast.textContent = message;
-  toast.className   = "toast toast-" + type;
-
-  // Inline colours as fallback if CSS classes aren't loaded
-  toast.style.background = type === "success" ? "#34a853" : "#ea4335";
-  toast.style.color      = "#fff";
-  toast.style.display    = "block";
-
-  // FIX #23 — clear previous timeout so rapid calls don't hide toast too early
-  if (toast._hideTimeout) clearTimeout(toast._hideTimeout);
-  toast._hideTimeout = setTimeout(function () {
-    toast.style.display = "none";
-  }, 4000);
+  const toast = document.getElementById("toast");
+  if (!toast) return;
+  toast.textContent   = message;
+  toast.className     = "toast toast-" + type;
+  toast.style.display = "block";
+  if (toast._t) clearTimeout(toast._t);
+  toast._t = setTimeout(function () { toast.style.display = "none"; }, 4000);
 }
+</script>
 </body>
 </html>
